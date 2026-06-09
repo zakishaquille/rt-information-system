@@ -361,8 +361,6 @@ erDiagram
         enum status "tetap | kontrak"
         string phone_number
         boolean is_married
-        date contract_start_date "nullable"
-        date contract_end_date "nullable"
         timestamp created_at
         timestamp updated_at
         timestamp deleted_at "soft delete"

@@ -2,7 +2,6 @@
 
 **Format**: User Stories
 **Total stories**: 11
-**Estimated total effort**: ~3 sprints
 
 ### Stories
 

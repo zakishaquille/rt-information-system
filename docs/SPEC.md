@@ -5,7 +5,7 @@ Membangun aplikasi terpusat untuk mengelola administrasi RT (penghuni, rumah, iu
 
 ## Tech Stack
 - **Backend:** Laravel 12.x (PHP)
-- **Frontend:** React 19.x (Vite), Zustand, Tailwind CSS 4.x
+- **Frontend:** React 19.x (Vite) with strict TypeScript, Zustand, Tailwind CSS 4.x
 - **Database:** MySQL 8.x
 
 ## Commands
@@ -59,7 +59,7 @@ class ResidentController extends Controller {
 ```
 
 ### Frontend (React)
-Use feature-based architecture and custom hooks for server state.
+Use feature-based architecture and custom hooks for server state. Strictly use TypeScript with no `any` datatype.
 ```tsx
 // src/features/residents/hooks/useResidents.ts
 export const useResidents = () => {

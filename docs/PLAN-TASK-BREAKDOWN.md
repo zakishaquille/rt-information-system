@@ -24,15 +24,15 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Files likely touched:** `backend/routes/api.php`, `backend/app/Http/Controllers/AuthController.php`, `frontend/src/features/auth/*`
   - **Estimated scope:** Medium
 
-- [ ] **Task 1.2: House Management (Story 2)**
+- [x] **Task 1.2: House Management (Story 2)**
   - **Description:** Implement backend models, API, and frontend UI to list and manage houses (UUID generation, status). Includes migrations, factories, and seeders for houses.
   - **Acceptance criteria:**
-    - [ ] Backend generates a UUID for each new house automatically.
-    - [ ] Database is seeded with 20 dummy houses (15 occupied, 5 empty).
-    - [ ] RT can view, add, and edit houses via the frontend.
+    - [x] Backend generates a UUID for each new house automatically.
+    - [x] Database is seeded with 20 dummy houses (15 occupied, 5 empty).
+    - [x] RT can view, add, and edit houses via the frontend.
   - **Verification:** 
-    - [ ] Tests pass: `php artisan test --filter House`
-    - [ ] DB Seeder: `php artisan db:seed --class=HouseSeeder` runs successfully.
+    - [x] Tests pass: `php artisan test --filter House`
+    - [x] DB Seeder: `php artisan db:seed --class=HouseSeeder` runs successfully.
   - **Dependencies:** Task 1.1
   - **Files likely touched:** `backend/database/migrations/*houses_table.php`, `backend/database/factories/HouseFactory.php`, `backend/database/seeders/HouseSeeder.php`, `backend/app/Models/House.php`, `frontend/src/features/houses/*`
   - **Estimated scope:** Medium

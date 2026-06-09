@@ -4,6 +4,8 @@ import { useAuthStore } from "@/stores/authStore";
 import { Login } from "@/features/auth/Login";
 import { apiClient } from "@/api/client";
 
+import { HousesList } from "@/features/houses";
+
 const Dashboard: React.FC = () => {
   const { user, setUser } = useAuthStore();
 
@@ -19,15 +21,21 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow">
-        <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-        <p>Welcome, {user?.name}</p>
-        <button
-          onClick={handleLogout}
-          className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-        >
-          Logout
-        </button>
+      <div className="mx-auto max-w-6xl rounded-lg bg-white p-6 shadow">
+        <div className="flex justify-between items-center mb-8 border-b pb-4">
+          <h1 className="text-2xl font-bold">RTIS Dashboard</h1>
+          <div className="flex items-center gap-4">
+            <p>Welcome, {user?.name}</p>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <HousesList />
       </div>
     </div>
   );

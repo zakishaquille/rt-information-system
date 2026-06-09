@@ -13,13 +13,13 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
 ## Task List
 
 ### Phase 1: Foundation & Base Data
-- [ ] **Task 1.1: Project Scaffolding & Authentication (Foundation)**
+- [x] **Task 1.1: Project Scaffolding & Authentication (Foundation)**
   - **Description:** Initialize Laravel (MySQL configured) and React projects, set up Sanctum SPA auth using the `.env` password, and build the Login UI.
   - **Acceptance criteria:**
-    - [ ] Laravel API responds to a login request using `ADMIN_PASSWORD` and sets a session cookie.
-    - [ ] React frontend has a login page that authenticates and redirects to an empty dashboard.
+    - [x] Laravel API responds to a login request using `ADMIN_PASSWORD` and sets a session cookie.
+    - [x] React frontend has a login page that authenticates and redirects to an empty dashboard.
   - **Verification:** 
-    - [ ] Manual check: Can log in with correct password, fails with incorrect.
+    - [x] Manual check: Can log in with correct password, fails with incorrect.
   - **Dependencies:** None
   - **Files likely touched:** `backend/routes/api.php`, `backend/app/Http/Controllers/AuthController.php`, `frontend/src/features/auth/*`
   - **Estimated scope:** Medium

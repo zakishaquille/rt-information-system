@@ -1,17 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHouses } from "./hooks/useHouses";
 import { HouseStatus, type House, type HouseInput } from "./types";
+import { HouseForm } from "./components/HouseForm";
+import { HouseResidentManager } from "./components/HouseResidentManager";
 
 export const HousesList: React.FC = () => {
-  const { houses, loading, error, createHouse, updateHouse, deleteHouse } =
-    useHouses();
+  const {
+    houses,
+    loading,
+    error,
+    fetchHouses,
+    createHouse,
+    updateHouse,
+    deleteHouse,
+    assignResident,
+    unassignResident,
+  } = useHouses();
   const [editingHouse, setEditingHouse] = useState<House | null>(null);
+  const [managingResidentsHouse, setManagingResidentsHouse] =
+    useState<House | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState<HouseInput>({
     code: "",
     address: "",
     status: HouseStatus.TIDAK_DIHUNI,
   });
+
+  useEffect(() => {
+    fetchHouses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -69,75 +87,6 @@ export const HousesList: React.FC = () => {
         <div className="p-4 bg-red-50 text-red-600 rounded">{error}</div>
       )}
 
-      {(isAdding || editingHouse) && (
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-6 rounded shadow border"
-        >
-          <h3 className="text-lg font-medium mb-4">
-            {editingHouse ? "Edit Rumah" : "Tambah Rumah Baru"}
-          </h3>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Kode Rumah
-              </label>
-              <input
-                type="text"
-                name="code"
-                required
-                value={formData.code}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded border-gray-300 shadow-sm p-2 border"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Alamat Lengkap
-              </label>
-              <input
-                type="text"
-                name="address"
-                required
-                value={formData.address}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded border-gray-300 shadow-sm p-2 border"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Status
-              </label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded border-gray-300 shadow-sm p-2 border"
-              >
-                <option value={HouseStatus.DIHUNI}>Dihuni</option>
-                <option value={HouseStatus.TIDAK_DIHUNI}>Tidak Dihuni</option>
-              </select>
-            </div>
-          </div>
-          <div className="mt-4 flex space-x-3">
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-            >
-              Simpan
-            </button>
-            <button
-              type="button"
-              onClick={cancelEdit}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-            >
-              Batal
-            </button>
-          </div>
-        </form>
-      )}
-
       {loading && !isAdding && !editingHouse && <p>Loading data...</p>}
 
       <div className="bg-white shadow overflow-hidden sm:rounded-lg border">
@@ -180,6 +129,12 @@ export const HousesList: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
+                    onClick={() => setManagingResidentsHouse(house)}
+                    className="text-blue-600 hover:text-blue-900 mr-4"
+                  >
+                    Manage Residents
+                  </button>
+                  <button
                     onClick={() => startEdit(house)}
                     className="text-indigo-600 hover:text-indigo-900 mr-4"
                   >
@@ -211,6 +166,29 @@ export const HousesList: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {(isAdding || editingHouse) && (
+        <HouseForm
+          editingHouse={editingHouse}
+          formData={formData}
+          loading={loading}
+          onInputChange={handleInputChange}
+          onSubmit={handleSubmit}
+          onCancel={cancelEdit}
+        />
+      )}
+
+      {managingResidentsHouse && (
+        <HouseResidentManager
+          house={
+            houses.find((h) => h.id === managingResidentsHouse.id) ||
+            managingResidentsHouse
+          }
+          onClose={() => setManagingResidentsHouse(null)}
+          onAssign={assignResident}
+          onUnassign={unassignResident}
+        />
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import type { House, HouseInput } from "../types";
 import { houseApi } from "../api";
 
@@ -14,7 +14,8 @@ export const useHouses = () => {
       const data = await houseApi.list();
       setHouses(data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch houses";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch houses";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -28,7 +29,8 @@ export const useHouses = () => {
       await houseApi.create(data);
       await fetchHouses();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to create house";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to create house";
       setError(errorMessage);
       throw err;
     } finally {
@@ -43,7 +45,8 @@ export const useHouses = () => {
       await houseApi.update(id, data);
       await fetchHouses();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to update house";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update house";
       setError(errorMessage);
       throw err;
     } finally {
@@ -58,7 +61,8 @@ export const useHouses = () => {
       await houseApi.delete(id);
       await fetchHouses();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to delete house";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete house";
       setError(errorMessage);
       throw err;
     } finally {
@@ -66,20 +70,51 @@ export const useHouses = () => {
     }
   };
 
-  useEffect(() => {
-    const init = async () => {
+  const assignResident = async (
+    houseId: number,
+    residentId: number,
+    isPic: boolean,
+  ) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await houseApi.assignResident(houseId, residentId, isPic);
       await fetchHouses();
-    };
-    init();
-  }, [fetchHouses]);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to assign resident";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const unassignResident = async (houseId: number, residentId: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await houseApi.unassignResident(houseId, residentId);
+      await fetchHouses();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to unassign resident";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     houses,
     loading,
     error,
+    fetchHouses,
     createHouse,
     updateHouse,
     deleteHouse,
-    refetch: fetchHouses,
+    assignResident,
+    unassignResident,
   };
 };

@@ -37,15 +37,15 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Files likely touched:** `backend/database/migrations/*houses_table.php`, `backend/database/factories/HouseFactory.php`, `backend/database/seeders/HouseSeeder.php`, `backend/app/Models/House.php`, `frontend/src/features/houses/*`
   - **Estimated scope:** Medium
 
-- [ ] **Task 1.3: Resident Management & House Assignment (Story 1 & Story 2)**
+- [x] **Task 1.3: Resident Management & House Assignment (Story 1 & Story 2)**
   - **Description:** Implement Resident CRUD with private KTP upload, and the ability to assign residents to houses (many-to-many with history). Includes migrations and seeders.
   - **Acceptance criteria:**
-    - [ ] KTP photos upload to private disk and can be fetched via protected API.
-    - [ ] RT can assign residents to a house and designate a PIC.
-    - [ ] Removing a resident records the `moved_out_at` date.
-    - [ ] Database is seeded with dummy residents assigned to the 15 occupied houses.
+    - [x] KTP photos upload to private disk and can be fetched via protected API.
+    - [x] RT can assign residents to a house and designate a PIC.
+    - [x] Removing a resident records the `moved_out_at` date.
+    - [x] Database is seeded with dummy residents assigned to the 15 occupied houses.
   - **Verification:** 
-    - [ ] Manual check: Upload resident with image, assign to house, verify image loads in UI.
+    - [x] Manual check: Upload resident with image, assign to house, verify image loads in UI.
   - **Dependencies:** Task 1.2
   - **Files likely touched:** `backend/database/migrations/*residents_table.php`, `backend/database/seeders/ResidentSeeder.php`, `backend/app/Http/Controllers/ResidentController.php`, `frontend/src/features/residents/*`
   - **Estimated scope:** Large

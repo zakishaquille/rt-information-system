@@ -20,4 +20,12 @@ export const houseApi = {
   delete: async (id: number): Promise<void> => {
     await apiClient.delete(`houses/${id}`);
   },
+
+  assignResident: async (houseId: number, residentId: number, isPic: boolean): Promise<void> => {
+    await apiClient.post(`houses/${houseId}/residents`, { json: { resident_id: residentId, is_pic: isPic } });
+  },
+
+  unassignResident: async (houseId: number, residentId: number): Promise<void> => {
+    await apiClient.delete(`houses/${houseId}/residents/${residentId}`);
+  },
 };

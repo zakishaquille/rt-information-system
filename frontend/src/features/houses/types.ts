@@ -1,4 +1,5 @@
-import type { Resident } from '../residents/types';
+import type { Payment } from "@/features/payments";
+import type { Resident } from "@/features/residents";
 
 export const HouseStatus = {
   DIHUNI: "dihuni",
@@ -26,6 +27,7 @@ export interface House {
   created_at: string;
   updated_at: string;
   residents?: HouseResident[];
+  payments?: Payment[];
 }
 
 export interface HouseInput {

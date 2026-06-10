@@ -20,6 +20,18 @@ export const useHouses = () => {
     }
   }, []);
 
+  const fetchHouseDetails = useCallback(async (id: number) => {
+    try {
+      setLoading(true);
+      return await houseApi.get(id);
+    } catch (err) {
+      toast.error(await handleApiError(err, "Failed to fetch house details"));
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const createHouse = async (data: HouseInput) => {
     try {
       setLoading(true);
@@ -98,6 +110,7 @@ export const useHouses = () => {
     houses,
     loading,
     fetchHouses,
+    fetchHouseDetails,
     createHouse,
     updateHouse,
     deleteHouse,

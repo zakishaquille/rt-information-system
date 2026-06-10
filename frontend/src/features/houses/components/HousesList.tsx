@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useHouses } from "../hooks/useHouses";
 import { HouseStatus, type House, type HouseInput } from "../types";
 import { HouseForm } from "./HouseForm";
-import { HouseResidentManager } from "./HouseResidentManager";
+import { HouseDetailModal } from "./HouseDetailModal";
 
 export const HousesList: React.FC = () => {
   const {
@@ -127,7 +127,7 @@ export const HousesList: React.FC = () => {
                     onClick={() => setManagingResidentsHouse(house)}
                     className="text-blue-600 hover:text-blue-900 mr-4"
                   >
-                    Manage Residents
+                    View Details
                   </button>
                   <button
                     onClick={() => startEdit(house)}
@@ -174,11 +174,9 @@ export const HousesList: React.FC = () => {
       )}
 
       {managingResidentsHouse && (
-        <HouseResidentManager
-          house={
-            houses.find((h) => h.id === managingResidentsHouse.id) ||
-            managingResidentsHouse
-          }
+        <HouseDetailModal
+          houseId={managingResidentsHouse.id}
+          houseCode={managingResidentsHouse.code}
           onClose={() => setManagingResidentsHouse(null)}
           onAssign={assignResident}
           onUnassign={unassignResident}

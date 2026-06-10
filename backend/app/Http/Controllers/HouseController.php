@@ -22,6 +22,16 @@ class HouseController extends Controller
 
     public function show(House $house)
     {
+        $house->load([
+            'residents' => function ($q) {
+                $q->orderBy('house_residents.moved_in_at', 'desc');
+            },
+            'payments' => function ($q) {
+                $q->orderBy('period_month', 'desc')->orderBy('created_at', 'desc');
+            },
+            'payments.dueTypeRate',
+            'payments.resident',
+        ]);
         return response()->json(['data' => $house]);
     }
 

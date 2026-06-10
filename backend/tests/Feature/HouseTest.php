@@ -226,4 +226,45 @@ class HouseTest extends TestCase
             'status' => 'dihuni'
         ]);
     }
+
+    public function test_can_fetch_house_with_history_and_payments()
+    {
+        $house = House::factory()->create();
+        $resident = \App\Models\Resident::factory()->create();
+
+        $house->residents()->attach($resident->id, [
+            'is_pic' => true,
+            'moved_in_at' => now()->subMonths(2),
+            'moved_out_at' => now()->subDays(5),
+        ]);
+
+        $category = \App\Models\TransactionCategory::create([
+            'type' => 'income',
+            'name' => 'Iuran Warga Test'
+        ]);
+        
+        $rate = \App\Models\DueTypeRate::create([
+            'name' => 'satpam',
+            'amount' => 100000,
+            'effective_from' => now()->toDateString(),
+        ]);
+
+        \App\Models\Payment::create([
+            'house_id' => $house->id,
+            'resident_id' => $resident->id,
+            'due_type_rate_id' => $rate->id,
+            'amount' => 100000,
+            'period_month' => now()->format('Y-m'),
+            'payment_date' => now(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->getJson('/api/houses/' . $house->id);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.id', $house->id)
+            ->assertJsonPath('data.residents.0.id', $resident->id)
+            ->assertJsonPath('data.payments.0.amount', '100000.00')
+            ->assertJsonPath('data.payments.0.due_type_rate.id', $rate->id)
+            ->assertJsonPath('data.payments.0.resident.id', $resident->id);
+    }
 }

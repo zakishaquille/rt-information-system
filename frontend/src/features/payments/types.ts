@@ -52,6 +52,14 @@ export interface Payment {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  resident?: {
+    id: number;
+    full_name: string;
+  };
+  due_type_rate?: {
+    id: number;
+    name: string;
+  };
 }
 
 export interface RecordPaymentResponse {

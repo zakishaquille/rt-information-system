@@ -12,6 +12,11 @@ export const houseApi = {
     return response.data;
   },
 
+  get: async (id: number): Promise<House> => {
+    const response = await apiClient.get(`houses/${id}`).json<{ data: House }>();
+    return response.data;
+  },
+
   update: async (id: number, data: HouseInput): Promise<House> => {
     const response = await apiClient.put(`houses/${id}`, { json: data }).json<{ data: House }>();
     return response.data;

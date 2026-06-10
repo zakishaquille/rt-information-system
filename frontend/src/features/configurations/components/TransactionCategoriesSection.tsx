@@ -71,7 +71,7 @@ export const TransactionCategoriesSection: React.FC<
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <div>
+        <div className="text-start">
           <h3 className="text-base font-semibold text-gray-900">
             Kategori Transaksi
           </h3>

@@ -19,4 +19,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('houses/{house}/residents', [\App\Http\Controllers\HouseResidentController::class, 'store']);
     Route::delete('houses/{house}/residents/{resident}', [\App\Http\Controllers\HouseResidentController::class, 'destroy']);
+
+    Route::get('due-type-rates', [\App\Http\Controllers\DueTypeRateController::class, 'index']);
+    Route::post('due-type-rates', [\App\Http\Controllers\DueTypeRateController::class, 'store']);
+    Route::delete('due-type-rates/{rate}', [\App\Http\Controllers\DueTypeRateController::class, 'destroy']);
+
+    Route::apiResource('transaction-categories', \App\Http\Controllers\TransactionCategoryController::class);
 });

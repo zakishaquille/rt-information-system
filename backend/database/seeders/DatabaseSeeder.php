@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             HouseSeeder::class,
             ResidentSeeder::class,
+            DueTypeRateSeeder::class,
+            TransactionCategorySeeder::class,
         ]);
     }
 }

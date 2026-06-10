@@ -4,7 +4,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Login } from "@/features/auth/Login";
 import { apiClient } from "@/api/client";
 
-import { HousesPage, ResidentsPage } from "@/pages";
+import { HousesPage, ResidentsPage, ConfigurationsPage } from "@/pages";
 
 const Dashboard: React.FC = () => {
   const { user, setUser } = useAuthStore();
@@ -53,6 +53,14 @@ const Dashboard: React.FC = () => {
           >
             Residents
           </Link>
+          <Link
+            to="/configurations"
+            className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+              location.pathname.startsWith('/configurations') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Pengaturan
+          </Link>
         </div>
 
         <Outlet />
@@ -90,6 +98,7 @@ function App() {
           <Route index element={<Navigate to="/houses" replace />} />
           <Route path="houses" element={<HousesPage />} />
           <Route path="residents" element={<ResidentsPage />} />
+          <Route path="configurations" element={<ConfigurationsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

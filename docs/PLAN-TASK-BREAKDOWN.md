@@ -24,28 +24,32 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Files likely touched:** `backend/routes/api.php`, `backend/app/Http/Controllers/AuthController.php`, `frontend/src/features/auth/*`
   - **Estimated scope:** Medium
 
-- [x] **Task 1.2: House Management (Story 2)**
+- [/] **Task 1.2: House Management (Story 2)**
   - **Description:** Implement backend models, API, and frontend UI to list and manage houses (UUID generation, status). Includes migrations, factories, and seeders for houses.
   - **Acceptance criteria:**
     - [x] Backend generates a UUID for each new house automatically.
     - [x] Database is seeded with 20 dummy houses (15 occupied, 5 empty).
     - [x] RT can view, add, and edit houses via the frontend.
+    - [ ] RT can view the full payment history for each house, showing the breakdown of dues, payer resident name/details, payment date, and status (lunas/belum) for each billing period.
   - **Verification:** 
     - [x] Tests pass: `php artisan test --filter House`
     - [x] DB Seeder: `php artisan db:seed --class=HouseSeeder` runs successfully.
+    - [ ] Manual check: Add a house detail view/modal showing payment history and check it loads historical payments correctly.
   - **Dependencies:** Task 1.1
   - **Files likely touched:** `backend/database/migrations/*houses_table.php`, `backend/database/factories/HouseFactory.php`, `backend/database/seeders/HouseSeeder.php`, `backend/app/Models/House.php`, `frontend/src/features/houses/*`
   - **Estimated scope:** Medium
 
-- [x] **Task 1.3: Resident Management & House Assignment (Story 1 & Story 2)**
+- [/] **Task 1.3: Resident Management & House Assignment (Story 1 & Story 2)**
   - **Description:** Implement Resident CRUD with private KTP upload, and the ability to assign residents to houses (many-to-many with history). Includes migrations and seeders.
   - **Acceptance criteria:**
     - [x] KTP photos upload to private disk and can be fetched via protected API.
     - [x] RT can assign residents to a house and designate a PIC.
     - [x] Removing a resident records the `moved_out_at` date.
     - [x] Database is seeded with dummy residents assigned to the 15 occupied houses.
+    - [ ] RT can view the list of historical residents (move-in and move-out logs) in the house management view/modal.
   - **Verification:** 
     - [x] Manual check: Upload resident with image, assign to house, verify image loads in UI.
+    - [ ] Manual check: Unassign resident, then verify they appear in the historical resident list.
   - **Dependencies:** Task 1.2
   - **Files likely touched:** `backend/database/migrations/*residents_table.php`, `backend/database/seeders/ResidentSeeder.php`, `backend/app/Http/Controllers/ResidentController.php`, `frontend/src/features/residents/*`
   - **Estimated scope:** Large
@@ -89,35 +93,33 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Dependencies:** Task 1.3, Task 1.4
   - **Estimated scope:** Large
 
-- [ ] **Task 2.2: Advanced Payments (Annual & Partial) (Story 5)**
-  - **Description:** Enhance payment logic to handle partial amounts and 1-year batch payments.
+- [ ] **Task 2.2: Annual Payments (Story 5)**
+  - **Description:** Enhance payment logic to handle 1-year batch payments for each due type.
   - **Acceptance criteria:**
-    - [ ] Annual payment creates 12 distinct monthly payment records inside a DB transaction.
-    - [ ] Partial payments correctly set month status to "Partial" and calculate remaining dues.
+    - [ ] Annual payment creates 12 distinct monthly payment records for a specific due type inside a DB transaction.
   - **Verification:** 
-    - [ ] Tests pass: Verify annual payment splits correctly.
+    - [ ] Tests pass: Verify annual payment splits correctly for the selected due type.
   - **Dependencies:** Task 2.1
   - **Estimated scope:** Medium
 
-- [ ] **Task 2.3: Refunds & Other Transactions (Story 6 & Story 7)**
-  - **Description:** Allow refunding dues and recording non-due expenses/incomes. Includes transaction dummy seeders.
+- [ ] **Task 2.3: Other Transactions (Story 6)**
+  - **Description:** Allow recording non-due expenses/incomes. Includes transaction dummy seeders.
   - **Acceptance criteria:**
-    - [ ] Refund logic correctly deducts from a payment and updates the month's status.
     - [ ] RT can record operational expenses (e.g., satpam salary) and view the transaction list.
     - [ ] DB seeded with dummy expense/income transactions.
   - **Verification:** 
-    - [ ] Manual check: Refund a Lunas payment, ensure status goes back to Partial or Belum.
+    - [ ] Manual check: Record an expense and income, and verify they appear on the transaction list.
   - **Dependencies:** Task 2.1
   - **Estimated scope:** Medium
 
 ### Checkpoint: Core Financials
-- [ ] All financial operations (Payments, Refunds, Expenses) work correctly and data seeds perfectly.
+- [ ] All financial operations (Payments, Expenses) work correctly and data seeds perfectly.
 - [ ] Balances calculate properly based on seeded data.
 
 ---
 
 ### Phase 3: Reporting & Public Access
-- [ ] **Task 3.1: Financial Dashboard & Reports (Story 8)**
+- [ ] **Task 3.1: Financial Dashboard & Reports (Story 7)**
   - **Description:** Build the RT dashboard and graphical reports using the seeded data.
   - **Acceptance criteria:**
     - [ ] Dashboard shows total balance (can be negative).
@@ -127,18 +129,20 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Dependencies:** Task 2.3
   - **Estimated scope:** Medium
 
-- [ ] **Task 3.2: Public Billing & Generate URLs (Story 9 & Story 10)**
+- [ ] **Task 3.2: Public Billing & Generate URLs (Story 8 & Story 9)**
   - **Description:** Public read-only page for house billing and RT tool to generate shareable list.
   - **Acceptance criteria:**
     - [ ] `/api-public/houses/{uuid}` returns billing status without authentication.
     - [ ] Frontend `/tagihan/{uuid}` displays status without exposing personal data.
+    - [ ] Public billing page `/tagihan/{uuid}` displays detailed payment history for the current year (breakdown of dues, payment dates, payer resident name, and status lunas/belum/partial).
     - [ ] RT can generate a copy-paste ready list of billing URLs for all occupied houses.
   - **Verification:** 
     - [ ] Manual check: Access public URL in incognito window.
+    - [ ] Manual check: Verify payment details and payer names are formatted correctly without leaking unnecessary private details (e.g., KTP).
   - **Dependencies:** Task 2.1
   - **Estimated scope:** Small
 
-- [ ] **Task 3.3: Public Financial Report (Story 11)**
+- [ ] **Task 3.3: Public Financial Report (Story 10)**
   - **Description:** Public read-only financial report.
   - **Acceptance criteria:**
     - [ ] `/api-public/reports` returns necessary chart data without authentication.

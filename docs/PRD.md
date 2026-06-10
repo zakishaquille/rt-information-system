@@ -148,9 +148,7 @@ Login (password dari ENV)
     ├── Kelola Pembayaran
     │   ├── Tabel pembayaran bulan ini (per rumah)
     │   ├── Catat pembayaran (pilih rumah → jenis iuran → periode)
-    │   ├── Pembayaran tahunan (1 transaksi, cover 12 bulan)
-    │   ├── Partial payment (cicilan)
-    │   └── Refund pembayaran
+    │   └── Pembayaran tahunan (1 transaksi, cover 12 bulan per jenis iuran)
     │
     ├── Kelola Pengeluaran
     │   ├── Daftar pengeluaran (filter by bulan, kategori)
@@ -216,9 +214,7 @@ Akses URL publik (tanpa login)
 |-------|--------|
 | **Deskripsi** | Pencatatan pembayaran iuran bulanan oleh RT |
 | **Jenis iuran** | Ditentukan oleh RT melalui konfigurasi (F7). Default: Satpam & Kebersihan. RT bisa menambah jenis iuran baru (misal: Sampah) yang otomatis masuk ke sistem tagihan |
-| **Mode pembayaran** | **Bulanan**: 1 transaksi = 1 bulan. **Tahunan**: 1 transaksi = 12 bulan (dicatat sebagai 1 record transaksi, tetapi status pembayaran per bulan otomatis terisi "Lunas") |
-| **Partial payment** | Warga bisa membayar sebagian (cicilan). Dicatat sebagai transaksi dengan `amount` < tarif penuh. Status bulan tersebut menjadi "Partial" dengan sisa tagihan tercatat. Bulan dianggap "Lunas" jika total pembayaran ≥ tarif. Multiple partial payments bisa mencover 1 bulan |
-| **Refund** | RT bisa melakukan refund atas pembayaran (misal penghuni kontrak pindah). Refund dicatat sebagai transaksi terpisah (tipe: refund) yang mengurangi saldo dan mengubah status bulan terkait sesuai nominal refund |
+| **Mode pembayaran** | **Bulanan**: 1 transaksi = 1 bulan. **Tahunan**: 1 transaksi = 12 bulan per jenis iuran (dicatat sebagai 1 record transaksi untuk jenis iuran terpilih, tetapi status pembayaran per bulan otomatis terisi "Lunas" untuk jenis iuran tersebut) |
 | **Tagihan otomatis** | Setiap bulan, sistem otomatis generate tagihan untuk rumah yang dihuni. Rumah kosong tidak ditagihkan |
 | **View pembayaran** | Tabel matrix: baris = rumah, kolom = bulan (Jan–Des). Cell menunjukkan status (Lunas ✅ / Partial 🟡 / Belum ❌). Klik cell untuk catat pembayaran |
 
@@ -416,16 +412,6 @@ erDiagram
         timestamp deleted_at "soft delete"
     }
 
-    refunds {
-        int id PK
-        int payment_id FK
-        decimal amount
-        text reason "nullable"
-        date refund_date
-        timestamp created_at
-        timestamp updated_at
-    }
-
     transaction_categories {
         int id PK
         enum type "expense | income"
@@ -451,7 +437,6 @@ erDiagram
     houses ||--o{ payments : "tagihan"
     residents ||--o{ payments : "membayar"
     due_type_rates ||--o{ payments : "tarif berlaku"
-    payments ||--o{ refunds : "refund"
     transaction_categories ||--o{ transactions : "kategori"
 ```
 
@@ -460,15 +445,13 @@ erDiagram
 - `houses` → `payments`: Banyak pembayaran per rumah
 - `payments` → `residents`: Pembayaran dicatat atas nama penghuni (PIC)
 - `payments` → `due_type_rates`: Setiap pembayaran mereferensi tarif yang berlaku saat itu
-- `refunds` → `payments`: Satu pembayaran bisa punya refund(s)
 - `transaction_categories` → `transactions`: 1 kategori untuk banyak entri (expense atau income)
 
 **Catatan Tipe Data ID:**
 Semua PK/FK menggunakan `int unsigned` (bukan default laravel `bigint`). Untuk skala RT (max ratusan record), `int unsigned` (max ~4.29 miliar) lebih dari cukup dan lebih hemat storage (4 byte vs 8 byte).
 
 **Logika Pembayaran:**
-- **Per bulan**: Setiap pembayaran mereferensi 1 `period_month` (YYYY-MM). Pembayaran tahunan di-expand menjadi **12 record** (1 per bulan) dalam 1 transaksi batch agar reporting tetap sederhana
-- **Partial payment**: Jika `amount` < tarif, bulan tersebut berstatus "Partial". Status "Lunas" jika `SUM(payments.amount) - SUM(refunds.amount) >= tarif` untuk bulan tersebut
+- **Per bulan**: Setiap pembayaran mereferensi 1 `period_month` (YYYY-MM). Pembayaran tahunan per jenis iuran di-expand menjadi **12 record** (1 per bulan) dalam 1 transaksi batch agar reporting tetap sederhana
 - **Tarif historis**: `due_type_rate_id` pada payment menyimpan tarif yang berlaku saat pembayaran dibuat, sehingga perubahan tarif tidak mempengaruhi data lama
 - **UUID publik**: Setiap rumah punya `uuid` yang digunakan sebagai identifier di URL publik (`/tagihan/{uuid}`), sehingga kode rumah tidak terekspos
 
@@ -496,8 +479,7 @@ Semua PK/FK menggunakan `int unsigned` (bukan default laravel `bigint`). Untuk s
 
 | Scope | Detail |
 |-------|--------|
-| F3: Pembayaran Iuran | Catat pembayaran bulanan, tahunan, & partial |
-| F3: Refund | Proses refund + update status bulan |
+| F3: Pembayaran Iuran | Catat pembayaran bulanan & tahunan per jenis iuran |
 | F4: Pengeluaran & F8: Pemasukan Lain | CRUD `transactions` (type: expense & income) + kategori |
 | Payment Matrix | Tabel visual status pembayaran (rumah × bulan) dengan 3 status |
 

@@ -71,7 +71,7 @@ export const useResidents = () => {
 
 ## Testing Strategy
 - **Backend:** 
-  - PHPUnit/Pest for Unit Tests (focusing on `Services` like `PaymentService` to ensure annual/partial payment logic is bulletproof).
+  - PHPUnit/Pest for Unit Tests (focusing on `Services` like `PaymentService` to ensure annual payment logic is bulletproof).
   - Feature tests for all API endpoints to ensure validation and correct response structures.
 - **Frontend:** 
   - Vitest for utility functions and complex custom hooks.
@@ -93,6 +93,5 @@ export const useResidents = () => {
 ## Success Criteria
 - [ ] Admin (RT) can successfully authenticate using the environment password.
 - [ ] Admin can perform full CRUD on Residents, Houses, Transactions, and record Payments.
-- [ ] Annual payments correctly generate 12 individual monthly payment records linked to the specific house and resident.
-- [ ] Partial payments correctly calculate remaining balances and update the month's status accordingly.
+- [ ] Annual payments correctly generate 12 individual monthly payment records linked to the specific house, resident, and selected due type.
 - [ ] Public URLs (`/tagihan/{uuid}` and `/laporan`) load correctly without authentication and do not leak sensitive data.

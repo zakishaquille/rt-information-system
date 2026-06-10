@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, Link, useLocation, Outlet } fro
 import { useAuthStore } from "@/stores/authStore";
 import { Login } from "@/features/auth/Login";
 import { apiClient } from "@/api/client";
+import { ToastContainer } from "@/components/ui/ToastContainer";
 
 import { HousesPage, ResidentsPage, ConfigurationsPage } from "@/pages";
 
@@ -85,6 +86,8 @@ function App() {
   }
 
   return (
+<>
+      <ToastContainer />
     <BrowserRouter>
       <Routes>
         <Route
@@ -102,6 +105,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+</>
   );
 }
 

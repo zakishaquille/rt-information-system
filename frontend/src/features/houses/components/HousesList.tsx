@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useHouses } from "./hooks/useHouses";
-import { HouseStatus, type House, type HouseInput } from "./types";
-import { HouseForm } from "./components/HouseForm";
-import { HouseResidentManager } from "./components/HouseResidentManager";
+import { useHouses } from "../hooks/useHouses";
+import { HouseStatus, type House, type HouseInput } from "../types";
+import { HouseForm } from "./HouseForm";
+import { HouseResidentManager } from "./HouseResidentManager";
 
 export const HousesList: React.FC = () => {
   const {
     houses,
     loading,
-    error,
     fetchHouses,
     createHouse,
     updateHouse,
@@ -82,10 +81,6 @@ export const HousesList: React.FC = () => {
           </button>
         )}
       </div>
-
-      {error && (
-        <div className="p-4 bg-red-50 text-red-600 rounded">{error}</div>
-      )}
 
       {loading && !isAdding && !editingHouse && <p>Loading data...</p>}
 

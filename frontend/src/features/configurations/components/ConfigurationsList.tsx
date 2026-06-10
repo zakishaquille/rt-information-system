@@ -1,14 +1,13 @@
 import React, { useEffect } from "react";
-import { useConfigurations } from "./hooks/useConfigurations";
-import { DueTypeRatesSection } from "./components/DueTypeRatesSection";
-import { TransactionCategoriesSection } from "./components/TransactionCategoriesSection";
+import { useConfigurations } from "../hooks/useConfigurations";
+import { DueTypeRatesSection } from "./DueTypeRatesSection";
+import { TransactionCategoriesSection } from "./TransactionCategoriesSection";
 
 export const ConfigurationsList: React.FC = () => {
   const {
     rates,
     categories,
     loading,
-    error,
     fetchAll,
     createRate,
     deleteRate,
@@ -29,12 +28,6 @@ export const ConfigurationsList: React.FC = () => {
           Pengaturan Konfigurasi
         </h2>
       </div>
-
-      {error && (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-600">
-          {error}
-        </div>
-      )}
 
       <DueTypeRatesSection
         rates={rates}

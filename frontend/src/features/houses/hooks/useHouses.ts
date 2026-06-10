@@ -1,22 +1,20 @@
 import { useState, useCallback } from "react";
 import type { House, HouseInput } from "../types";
 import { houseApi } from "../api";
+import { toast } from "@/stores/useToastStore";
+import { handleApiError } from "@/utils/apiErrorHelper";
 
 export const useHouses = () => {
   const [houses, setHouses] = useState<House[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchHouses = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
       const data = await houseApi.list();
       setHouses(data);
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to fetch houses";
-      setError(errorMessage);
+      toast.error(await handleApiError(err, "Failed to fetch houses"));
     } finally {
       setLoading(false);
     }
@@ -25,13 +23,11 @@ export const useHouses = () => {
   const createHouse = async (data: HouseInput) => {
     try {
       setLoading(true);
-      setError(null);
       await houseApi.create(data);
+      toast.success("House created successfully");
       await fetchHouses();
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to create house";
-      setError(errorMessage);
+      toast.error(await handleApiError(err, "Failed to create house"));
       throw err;
     } finally {
       setLoading(false);
@@ -41,13 +37,11 @@ export const useHouses = () => {
   const updateHouse = async (id: number, data: HouseInput) => {
     try {
       setLoading(true);
-      setError(null);
       await houseApi.update(id, data);
+      toast.success("House updated successfully");
       await fetchHouses();
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to update house";
-      setError(errorMessage);
+      toast.error(await handleApiError(err, "Failed to update house"));
       throw err;
     } finally {
       setLoading(false);
@@ -57,13 +51,11 @@ export const useHouses = () => {
   const deleteHouse = async (id: number) => {
     try {
       setLoading(true);
-      setError(null);
       await houseApi.delete(id);
+      toast.success("House deleted successfully");
       await fetchHouses();
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to delete house";
-      setError(errorMessage);
+      toast.error(await handleApiError(err, "Failed to delete house"));
       throw err;
     } finally {
       setLoading(false);
@@ -77,13 +69,11 @@ export const useHouses = () => {
   ) => {
     try {
       setLoading(true);
-      setError(null);
       await houseApi.assignResident(houseId, residentId, isPic);
+      toast.success("Resident assigned successfully");
       await fetchHouses();
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to assign resident";
-      setError(errorMessage);
+      toast.error(await handleApiError(err, "Failed to assign resident"));
       throw err;
     } finally {
       setLoading(false);
@@ -93,13 +83,11 @@ export const useHouses = () => {
   const unassignResident = async (houseId: number, residentId: number) => {
     try {
       setLoading(true);
-      setError(null);
       await houseApi.unassignResident(houseId, residentId);
+      toast.success("Resident unassigned successfully");
       await fetchHouses();
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to unassign resident";
-      setError(errorMessage);
+      toast.error(await handleApiError(err, "Failed to unassign resident"));
       throw err;
     } finally {
       setLoading(false);
@@ -109,7 +97,6 @@ export const useHouses = () => {
   return {
     houses,
     loading,
-    error,
     fetchHouses,
     createHouse,
     updateHouse,

@@ -7,7 +7,6 @@ export function ResidentsList() {
   const {
     residents,
     loading,
-    error,
     fetchResidents,
     createResident,
     updateResident,
@@ -73,10 +72,8 @@ export function ResidentsList() {
     if (window.confirm("Are you sure you want to delete this resident?")) {
       try {
         await deleteResident(id);
-      } catch {
-        alert(
-          "Failed to delete resident. They might be currently assigned to a house.",
-        );
+      } catch (err) {
+        console.error("Error deleting resident:", err);
       }
     }
   };
@@ -85,10 +82,6 @@ export function ResidentsList() {
     return (
       <div className="p-8 text-center text-gray-500">Loading residents...</div>
     );
-  }
-
-  if (error) {
-    return <div className="p-8 text-center text-red-500">Error: {error}</div>;
   }
 
   return (

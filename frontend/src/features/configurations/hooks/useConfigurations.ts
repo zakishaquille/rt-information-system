@@ -7,17 +7,17 @@ import type {
   UpdateTransactionCategoryInput,
 } from '../types';
 import { configurationsApi } from '../api';
+import { toast } from '@/stores/useToastStore';
+import { handleApiError } from '@/utils/apiErrorHelper';
 
 export const useConfigurations = () => {
   const [rates, setRates] = useState<DueTypeRate[]>([]);
   const [categories, setCategories] = useState<TransactionCategory[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchAll = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
       const [ratesData, categoriesData] = await Promise.all([
         configurationsApi.listRates(),
         configurationsApi.listCategories(),
@@ -25,7 +25,7 @@ export const useConfigurations = () => {
       setRates(ratesData);
       setCategories(categoriesData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load configurations');
+      toast.error(await handleApiError(err, 'Failed to load configurations'));
     } finally {
       setLoading(false);
     }
@@ -34,12 +34,11 @@ export const useConfigurations = () => {
   const createRate = async (data: DueTypeRateInput) => {
     try {
       setLoading(true);
-      setError(null);
       await configurationsApi.createRate(data);
+      toast.success('Rate created successfully');
       await fetchAll();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to create rate';
-      setError(msg);
+      toast.error(await handleApiError(err, 'Failed to create rate'));
       throw err;
     } finally {
       setLoading(false);
@@ -49,12 +48,11 @@ export const useConfigurations = () => {
   const deleteRate = async (id: number) => {
     try {
       setLoading(true);
-      setError(null);
       await configurationsApi.deleteRate(id);
+      toast.success('Rate deleted successfully');
       await fetchAll();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete rate';
-      setError(msg);
+      toast.error(await handleApiError(err, 'Failed to delete rate'));
       throw err;
     } finally {
       setLoading(false);
@@ -64,12 +62,11 @@ export const useConfigurations = () => {
   const createCategory = async (data: TransactionCategoryInput) => {
     try {
       setLoading(true);
-      setError(null);
       await configurationsApi.createCategory(data);
+      toast.success('Category created successfully');
       await fetchAll();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to create category';
-      setError(msg);
+      toast.error(await handleApiError(err, 'Failed to create category'));
       throw err;
     } finally {
       setLoading(false);
@@ -79,12 +76,11 @@ export const useConfigurations = () => {
   const updateCategory = async (id: number, data: UpdateTransactionCategoryInput) => {
     try {
       setLoading(true);
-      setError(null);
       await configurationsApi.updateCategory(id, data);
+      toast.success('Category updated successfully');
       await fetchAll();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to update category';
-      setError(msg);
+      toast.error(await handleApiError(err, 'Failed to update category'));
       throw err;
     } finally {
       setLoading(false);
@@ -94,12 +90,11 @@ export const useConfigurations = () => {
   const deleteCategory = async (id: number) => {
     try {
       setLoading(true);
-      setError(null);
       await configurationsApi.deleteCategory(id);
+      toast.success('Category deleted successfully');
       await fetchAll();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete category';
-      setError(msg);
+      toast.error(await handleApiError(err, 'Failed to delete category'));
       throw err;
     } finally {
       setLoading(false);
@@ -110,7 +105,6 @@ export const useConfigurations = () => {
     rates,
     categories,
     loading,
-    error,
     fetchAll,
     createRate,
     deleteRate,

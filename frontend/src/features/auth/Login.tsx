@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { apiClient, sanctumClient } from "@/api/client";
 import { useAuthStore } from "@/stores/authStore";
+import { toast } from "@/stores/useToastStore";
+import { handleApiError } from "@/utils/apiErrorHelper";
 
 interface LoginResponse {
   user: {
@@ -12,14 +14,12 @@ interface LoginResponse {
 
 export const Login: React.FC = () => {
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { setUser } = useAuthStore();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
       // CSRF initialization for Sanctum
@@ -31,21 +31,10 @@ export const Login: React.FC = () => {
         })
         .json<LoginResponse>();
 
+      toast.success("Login berhasil");
       setUser(data.user);
     } catch (err: unknown) {
-      let errorMessage = "Failed to login";
-      if (err instanceof Error) {
-        if (err.name === "HTTPError" && "response" in err) {
-          const httpError = err as import("ky").HTTPError;
-          const errorData = (await httpError.response
-            .json()
-            .catch(() => ({}))) as { message?: string };
-          errorMessage = errorData.message || errorMessage;
-        } else {
-          errorMessage = err.message;
-        }
-      }
-      setError(errorMessage);
+      toast.error(await handleApiError(err, "Failed to login"));
     } finally {
       setIsLoading(false);
     }
@@ -57,11 +46,6 @@ export const Login: React.FC = () => {
         <h2 className="mb-6 text-center text-2xl font-bold text-gray-800">
           RT Admin Login
         </h2>
-        {error && (
-          <div className="mb-4 rounded bg-red-100 p-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label

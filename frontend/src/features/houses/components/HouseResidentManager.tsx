@@ -41,8 +41,10 @@ export const HouseResidentManager: React.FC<HouseResidentManagerProps> = ({
       await onAssign(house.id, Number(selectedResidentId), isPic);
       setSelectedResidentId("");
       setIsPic(false);
-    } catch {
-      alert("Failed to assign resident");
+    } catch (err) {
+      // The error is already handled by the hook which throws it, and useHouses already shows toast.
+      // We don't need to show another toast here, just catch to prevent unhandled promise rejection.
+      console.error(err);
     }
   };
 
@@ -54,8 +56,9 @@ export const HouseResidentManager: React.FC<HouseResidentManagerProps> = ({
     ) {
       try {
         await onUnassign(house.id, resident.id);
-      } catch {
-        alert("Failed to unassign resident");
+      } catch (err) {
+        // The error is already handled by the hook which throws it, and useHouses already shows toast.
+        console.error(err);
       }
     }
   };
@@ -84,7 +87,7 @@ export const HouseResidentManager: React.FC<HouseResidentManagerProps> = ({
                 >
                   <div>
                     <span className="font-medium">{resident.full_name}</span>
-                    {resident.pivot.is_pic && (
+                    {!!resident.pivot.is_pic && (
                       <span className="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                         PIC
                       </span>

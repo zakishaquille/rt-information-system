@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { CategoryType, type TransactionCategory, type TransactionCategoryInput } from '../types';
 
 interface TransactionCategoryFormProps {

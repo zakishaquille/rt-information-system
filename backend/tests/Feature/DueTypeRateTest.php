@@ -106,11 +106,8 @@ class DueTypeRateTest extends TestCase
             'effective_from' => $secondFutureDate,
         ]);
 
-        // The first future rate must be closed
-        $firstFuture->refresh();
-        $this->assertNotNull($firstFuture->effective_to);
-        $expectedClose = Carbon::parse($secondFutureDate)->subDay()->toDateString();
-        $this->assertEquals($expectedClose, $firstFuture->effective_to->toDateString());
+        // The first future rate should be deleted (never took effect)
+        $this->assertDatabaseMissing('due_type_rates', ['id' => $firstFuture->id]);
     }
 
     public function test_creating_rate_for_one_type_does_not_affect_other_type()
@@ -257,6 +254,35 @@ class DueTypeRateTest extends TestCase
             ->assertJsonPath('message', 'Tarif yang sudah expired tidak dapat dihapus karena merupakan data historis.');
 
         $this->assertDatabaseHas('due_type_rates', ['id' => $rate->id]);
+    }
+
+    public function test_deleting_active_rate_used_in_payments_expires_it_instead_of_hard_delete()
+    {
+        $rate = DueTypeRate::create([
+            'name'           => 'satpam',
+            'amount'         => 100000,
+            'effective_from' => '2026-01-01',
+            'effective_to'   => null,
+        ]);
+
+        $house = \App\Models\House::factory()->create();
+        $resident = \App\Models\Resident::factory()->create();
+
+        \App\Models\Payment::create([
+            'house_id' => $house->id,
+            'resident_id' => $resident->id,
+            'due_type_rate_id' => $rate->id,
+            'amount' => 100000,
+            'period_month' => '2026-01',
+            'payment_date' => now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->deleteJson("/api/due-type-rates/{$rate->id}");
+
+        $response->assertStatus(200);
+        
+        $rate->refresh();
+        $this->assertEquals(now()->subDay()->toDateString(), $rate->effective_to->toDateString());
     }
 
     public function test_unauthenticated_cannot_access_rates()

@@ -9,13 +9,13 @@ class DueTypeRateSeeder extends Seeder
 {
     public function run(): void
     {
-        $today = now()->toDateString();
+        $startDate = now()->subYear()->startOfMonth()->toDateString();
 
         DueTypeRate::insert([
             [
                 'name'           => 'satpam',
                 'amount'         => 100000.00,
-                'effective_from' => $today,
+                'effective_from' => $startDate,
                 'effective_to'   => null,
                 'created_at'     => now(),
                 'updated_at'     => now(),
@@ -23,7 +23,7 @@ class DueTypeRateSeeder extends Seeder
             [
                 'name'           => 'kebersihan',
                 'amount'         => 15000.00,
-                'effective_from' => $today,
+                'effective_from' => $startDate,
                 'effective_to'   => null,
                 'created_at'     => now(),
                 'updated_at'     => now(),

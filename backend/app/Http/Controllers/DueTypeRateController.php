@@ -31,17 +31,26 @@ class DueTypeRateController extends Controller
         $validated = $request->validated();
 
         $rate = DB::transaction(function () use ($validated) {
-            // The old rate (current or already-future) ends the day before the new one starts.
-            $closeDate = Carbon::parse($validated['effective_from'])->subDay()->toDateString();
+            $newEffectiveFrom = $validated['effective_from'];
+            $closeDate = Carbon::parse($newEffectiveFrom)->subDay()->toDateString();
+            $today = now()->toDateString();
 
+            // Close currently active rates (already in effect: effective_from <= today)
             DueTypeRate::where('name', $validated['name'])
                 ->whereNull('effective_to')
+                ->where('effective_from', '<=', $today)
                 ->update(['effective_to' => $closeDate]);
+
+            // Delete future/upcoming rates that never took effect (effective_from > today)
+            DueTypeRate::where('name', $validated['name'])
+                ->whereNull('effective_to')
+                ->where('effective_from', '>', $today)
+                ->delete();
 
             return DueTypeRate::create([
                 'name'           => $validated['name'],
                 'amount'         => $validated['amount'],
-                'effective_from' => $validated['effective_from'],
+                'effective_from' => $newEffectiveFrom,
                 'effective_to'   => null,
             ]);
         });
@@ -75,21 +84,26 @@ class DueTypeRateController extends Controller
             ], 422);
         }
 
-        DB::transaction(function () use ($rate, $isMendatang) {
-            if ($isMendatang) {
-                // Reopen the predecessor: find the rate for same name that was closed
-                // because effective_to == this.effective_from - 1
-                $expectedCloseDate = $rate->effective_from->subDay()->toDateString();
+        DB::transaction(function () use ($rate, $isMendatang, $today) {
+            if ($rate->payments()->exists()) {
+                // Rate is used in payments, expire it instead of hard delete
+                $rate->update(['effective_to' => Carbon::parse($today)->subDay()->toDateString()]);
+            } else {
+                if ($isMendatang) {
+                    // Reopen the predecessor: find the rate for same name that was closed
+                    // because effective_to == this.effective_from - 1
+                    $expectedCloseDate = $rate->effective_from->subDay()->toDateString();
 
-                DueTypeRate::where('name', $rate->name)
-                    ->where('effective_to', $expectedCloseDate)
-                    ->where('id', '!=', $rate->id)
-                    ->update(['effective_to' => null]);
+                    DueTypeRate::where('name', $rate->name)
+                        ->where('effective_to', $expectedCloseDate)
+                        ->where('id', '!=', $rate->id)
+                        ->update(['effective_to' => null]);
+                }
+
+                $rate->delete();
             }
-
-            $rate->delete();
         });
 
-        return response()->json(['message' => 'Tarif berhasil dihapus.']);
+        return response()->json(['message' => 'Tarif berhasil dihapus atau dihentikan.']);
     }
 }

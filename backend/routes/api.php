@@ -24,5 +24,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('due-type-rates', [\App\Http\Controllers\DueTypeRateController::class, 'store']);
     Route::delete('due-type-rates/{rate}', [\App\Http\Controllers\DueTypeRateController::class, 'destroy']);
 
+    Route::get('payments/matrix', [\App\Http\Controllers\PaymentController::class, 'getMatrix']);
+    Route::post('payments', [\App\Http\Controllers\PaymentController::class, 'store']);
+    Route::delete('payments/{payment}', [\App\Http\Controllers\PaymentController::class, 'destroy']);
+
     Route::apiResource('transaction-categories', \App\Http\Controllers\TransactionCategoryController::class);
 });

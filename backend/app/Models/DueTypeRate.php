@@ -41,4 +41,9 @@ class DueTypeRate extends Model
         return $query->whereNull('effective_to')
             ->where('effective_from', '>', now()->toDateString());
     }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

@@ -32,4 +32,9 @@ class House extends Model
             ->withPivot('id', 'is_pic', 'moved_in_at', 'moved_out_at')
             ->withTimestamps();
     }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

@@ -33,7 +33,7 @@ class DueTypeRateTest extends TestCase
             ->assertJsonCount(2, 'data');
     }
 
-    public function test_can_create_new_rate_starting_today_and_closes_previous()
+    public function test_can_create_new_rate_and_closes_previous()
     {
         $old = DueTypeRate::create([
             'name'           => 'satpam',
@@ -42,17 +42,17 @@ class DueTypeRateTest extends TestCase
             'effective_to'   => null,
         ]);
 
-        $today = now()->toDateString();
-
         $response = $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => 'satpam',
-            'amount'         => 120000,
-            'effective_from' => $today,
+            'name'   => 'satpam',
+            'amount' => 120000,
         ]);
+
+        $today = now()->toDateString();
 
         $response->assertStatus(201)
             ->assertJsonPath('data.name', 'satpam')
             ->assertJsonPath('data.amount', '120000.00')
+            ->assertJsonPath('data.effective_from', $today . 'T00:00:00.000000Z')
             ->assertJsonPath('data.effective_to', null);
 
         // Old rate must be closed (effective_to = today - 1 day)
@@ -61,53 +61,17 @@ class DueTypeRateTest extends TestCase
         $this->assertEquals(Carbon::parse($today)->subDay()->toDateString(), $old->effective_to->toDateString());
     }
 
-    public function test_can_create_future_rate_and_closes_current()
+    public function test_effective_from_is_always_today()
     {
-        $current = DueTypeRate::create([
-            'name'           => 'satpam',
-            'amount'         => 100000,
-            'effective_from' => '2026-01-01',
-            'effective_to'   => null,
-        ]);
-
-        $nextMonth = now()->addMonth()->toDateString();
-
         $response = $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => 'satpam',
-            'amount'         => 130000,
-            'effective_from' => $nextMonth,
+            'name'   => 'satpam',
+            'amount' => 100000,
         ]);
 
-        $response->assertStatus(201)
-            ->assertJsonPath('data.effective_to', null);
-
-        // Current rate must be closed at effective_from - 1 day
-        $current->refresh();
-        $this->assertNotNull($current->effective_to);
-        $expectedCloseDate = Carbon::parse($nextMonth)->subDay()->toDateString();
-        $this->assertEquals($expectedCloseDate, $current->effective_to->toDateString());
-    }
-
-    public function test_creating_future_rate_replaces_existing_future_rate()
-    {
-        // First future rate
-        $firstFuture = DueTypeRate::create([
-            'name'           => 'kebersihan',
-            'amount'         => 20000,
-            'effective_from' => now()->addMonths(1)->toDateString(),
-            'effective_to'   => null,
-        ]);
-
-        // Second future rate (supersedes the first)
-        $secondFutureDate = now()->addMonths(2)->toDateString();
-        $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => 'kebersihan',
-            'amount'         => 25000,
-            'effective_from' => $secondFutureDate,
-        ]);
-
-        // The first future rate should be deleted (never took effect)
-        $this->assertDatabaseMissing('due_type_rates', ['id' => $firstFuture->id]);
+        $response->assertStatus(201);
+        
+        $rate = DueTypeRate::find($response->json('data.id'));
+        $this->assertEquals(now()->toDateString(), $rate->effective_from->toDateString());
     }
 
     public function test_creating_rate_for_one_type_does_not_affect_other_type()
@@ -120,9 +84,8 @@ class DueTypeRateTest extends TestCase
         ]);
 
         $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => 'satpam',
-            'amount'         => 100000,
-            'effective_from' => now()->toDateString(),
+            'name'   => 'satpam',
+            'amount' => 100000,
         ]);
 
         // Kebersihan rate should remain open
@@ -130,35 +93,11 @@ class DueTypeRateTest extends TestCase
         $this->assertNull($kebersihan->effective_to);
     }
 
-    public function test_rate_creation_rejects_past_date()
-    {
-        $response = $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => 'satpam',
-            'amount'         => 50000,
-            'effective_from' => now()->subDay()->toDateString(), // yesterday
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['effective_from']);
-    }
-
-    public function test_rate_creation_accepts_today_as_effective_from()
-    {
-        $response = $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => 'satpam',
-            'amount'         => 100000,
-            'effective_from' => now()->toDateString(),
-        ]);
-
-        $response->assertStatus(201);
-    }
-
     public function test_rate_creation_rejects_empty_name()
     {
         $response = $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => '',
-            'amount'         => 50000,
-            'effective_from' => now()->toDateString(),
+            'name'   => '',
+            'amount' => 50000,
         ]);
 
         $response->assertStatus(422)
@@ -168,9 +107,8 @@ class DueTypeRateTest extends TestCase
     public function test_can_create_rate_with_custom_due_type_name()
     {
         $response = $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => 'sampah',
-            'amount'         => 10000,
-            'effective_from' => now()->toDateString(),
+            'name'   => 'sampah',
+            'amount' => 10000,
         ]);
 
         $response->assertStatus(201)
@@ -180,48 +118,12 @@ class DueTypeRateTest extends TestCase
     public function test_rate_creation_requires_positive_amount()
     {
         $response = $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => 'satpam',
-            'amount'         => -100,
-            'effective_from' => now()->toDateString(),
+            'name'   => 'satpam',
+            'amount' => -100,
         ]);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['amount']);
-    }
-
-    public function test_can_delete_upcoming_rate_and_reopen_predecessor()
-    {
-        // First rate
-        $first = DueTypeRate::create([
-            'name'           => 'kebersihan',
-            'amount'         => 15000,
-            'effective_from' => '2026-01-01',
-            'effective_to'   => null,
-        ]);
-
-        // Second rate (upcoming)
-        $futureDate = now()->addMonth()->toDateString();
-        $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
-            'name'           => 'kebersihan',
-            'amount'         => 20000,
-            'effective_from' => $futureDate,
-        ]);
-
-        // Verify first rate is closed
-        $first->refresh();
-        $this->assertNotNull($first->effective_to);
-
-        $upcoming = DueTypeRate::where('amount', 20000)->first();
-
-        // Delete upcoming rate
-        $response = $this->actingAs($this->admin)->deleteJson("/api/due-type-rates/{$upcoming->id}");
-
-        $response->assertStatus(200);
-        $this->assertDatabaseMissing('due_type_rates', ['id' => $upcoming->id]);
-
-        // Verify first rate is reopened
-        $first->refresh();
-        $this->assertNull($first->effective_to);
     }
 
     public function test_can_delete_active_rate()
@@ -289,5 +191,19 @@ class DueTypeRateTest extends TestCase
     {
         $response = $this->getJson('/api/due-type-rates');
         $response->assertStatus(401);
+    }
+
+    public function test_effective_from_in_request_body_is_ignored()
+    {
+        // Even if client sends effective_from, server should use today
+        $response = $this->actingAs($this->admin)->postJson('/api/due-type-rates', [
+            'name'           => 'satpam',
+            'amount'         => 100000,
+            'effective_from' => '2099-12-31', // should be ignored
+        ]);
+
+        $response->assertStatus(201);
+        $rate = DueTypeRate::find($response->json('data.id'));
+        $this->assertEquals(now()->toDateString(), $rate->effective_from->toDateString());
     }
 }

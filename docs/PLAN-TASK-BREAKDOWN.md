@@ -54,38 +54,38 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Description:** CRUD for `due_type_rates` (jenis iuran bebas, default: Satpam & Kebersihan) and `transaction_categories`. Includes migrations and seeders for default rates/categories.
   - **Acceptance criteria:**
     - [x] RT dapat **menambah jenis iuran baru** (free-form name, tidak dibatasi Satpam/Kebersihan).
-    - [x] Tarif baru hanya bisa dibuat dengan `effective_from` = hari ini atau masa depan (tidak bisa backdate).
-    - [x] Status tarif ditentukan oleh tanggal: **Aktif** (`effective_from` ≤ hari ini, `effective_to` null) vs **Mendatang** (`effective_from` > hari ini, `effective_to` null).
-    - [x] Saat tarif baru dibuat, semua tarif terbuka (aktif maupun terjadwal) untuk jenis yang sama otomatis ditutup: `effective_to` = `new.effective_from − 1 hari`.
-    - [x] RT dapat menghapus tarif Mendatang (mengembalikan tarif sebelumnya jadi aktif) atau tarif Aktif. Tarif Expired tidak bisa dihapus.
-    - [x] Tampilan grid iuran hanya memunculkan jenis iuran yang memiliki tarif Aktif atau Mendatang.
+    - [x] Tarif baru selalu berlaku mulai hari ini (server-side, tidak ada input tanggal manual).
+    - [x] Status tarif: **Aktif** (`effective_to` null atau ≥ hari ini) vs **Expired** (`effective_to` < hari ini).
+    - [x] Saat tarif baru dibuat, tarif aktif untuk jenis yang sama otomatis ditutup: `effective_to` = hari ini − 1 hari.
+    - [x] RT dapat menghapus tarif Aktif. Tarif Expired tidak bisa dihapus.
+    - [x] Tampilan grid iuran hanya memunculkan jenis iuran yang memiliki tarif Aktif.
     - [x] Histori tarif tersimpan di DB; perubahan tarif tidak mempengaruhi tagihan yang sudah dibuat.
     - [x] RT dapat kelola kategori pengeluaran & pemasukan (tambah/edit/hapus nama; tipe immutable setelah dibuat).
     - [x] Database seeded: Satpam Rp 100.000, Kebersihan Rp 15.000; default expense & income categories.
   - **Verification:** 
     - [x] Tests pass: `DueTypeRateTest` (11 tests), `TransactionCategoryTest` (8 tests).
-    - [x] Manual check: Set tarif baru dengan tanggal mendatang → status "Mendatang" tampil di UI; tanggal lalu ditolak.
+    - [x] Manual check: Set tarif baru → langsung aktif; tarif sebelumnya otomatis expired.
   - **Dependencies:** Task 1.1
   - **Files touched:** `migrations/..._create_due_type_rates_table`, `migrations/..._create_transaction_categories_table`, `Models/DueTypeRate`, `Models/TransactionCategory`, `Seeders/DueTypeRateSeeder`, `Seeders/TransactionCategorySeeder`, `Controllers/DueTypeRateController`, `Controllers/TransactionCategoryController`, `Requests/StoreDueTypeRateRequest`, `features/configurations/*`
   - **Estimated scope:** Medium
 
 ### Checkpoint: Foundation
-- [ ] Backend tests for Auth, Houses, Residents, Configurations pass.
-- [ ] Database successfully migrates and seeds from scratch (`php artisan migrate:fresh --seed`).
-- [ ] Admin can log in, view seeded houses and residents, configure rates.
+- [x] Backend tests for Auth, Houses, Residents, Configurations pass.
+- [x] Database successfully migrates and seeds from scratch (`php artisan migrate:fresh --seed`).
+- [x] Admin can log in, view seeded houses and residents, configure rates.
 
 ---
 
 ### Phase 2: Core Financials
-- [ ] **Task 2.1: Monthly Payment Recording (Matrix View) (Story 4)**
-  - **Description:** Implement the core billing matrix and standard monthly payment recording. Includes dummy payment seeding.
+- [x] **Task 2.1: Monthly Payment Recording (Matrix View) (Story 4)**
+  - **Description:** Implement the core billing matrix and standard monthly payment recording. Includes dummy payment seeding. Features include "Bayar Semua", "Batal", and Search filtering.
   - **Acceptance criteria:**
-    - [ ] API returns a matrix data structure of houses vs months for the current year.
-    - [ ] Frontend displays the Matrix table (Lunas/Partial/Belum).
-    - [ ] RT can record a full monthly payment which captures the currently active rate.
-    - [ ] Database seeded with historical payment data for the dummy houses.
+    - [x] API returns a matrix data structure of houses vs months for the current year.
+    - [x] Frontend displays the Matrix table (Lunas/Partial/Belum) with resident PIC logic.
+    - [x] RT can record a full monthly payment which captures the currently active rate, or revert it.
+    - [x] Database seeded with historical payment data for the dummy houses.
   - **Verification:** 
-    - [ ] Tests pass: `php artisan test --filter PaymentServiceTest`
+    - [x] Tests pass: `php artisan test --filter PaymentServiceTest`
   - **Dependencies:** Task 1.3, Task 1.4
   - **Estimated scope:** Large
 

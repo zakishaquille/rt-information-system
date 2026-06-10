@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import type { DueTypeRate, DueTypeRateInput } from "../types";
+import {
+  RateStatus,
+  type DueTypeRate,
+  type DueTypeRateInput,
+  type RateStatusType,
+} from "../types";
 import { DueTypeRateForm } from "./DueTypeRateForm";
 import { DueTypeRateHistory } from "./DueTypeRateHistory";
 
@@ -31,41 +36,28 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
   const getRateStatus = (r: {
     effective_from: string;
     effective_to: string | null;
-  }): "aktif" | "mendatang" | "expired" => {
-    const from = r.effective_from.slice(0, 10);
+  }): RateStatusType => {
     const to = r.effective_to ? r.effective_to.slice(0, 10) : null;
-    if (from > todayStr) return "mendatang";
-    if (to === null || to >= todayStr) return "aktif";
-    return "expired";
+    if (to === null || to >= todayStr) return RateStatus.ACTIVE;
+    return RateStatus.EXPIRED;
   };
 
   const activeRates: Record<
     string,
     { amount: string; effectiveFrom: string } | null
   > = {};
-  const upcomingRates: Record<
-    string,
-    { amount: string; effectiveFrom: string } | null
-  > = {};
 
   rates.forEach((r) => {
     const status = getRateStatus(r);
-    if (status === "aktif" && !activeRates[r.name]) {
+    if (status === RateStatus.ACTIVE && !activeRates[r.name]) {
       activeRates[r.name] = {
-        amount: r.amount,
-        effectiveFrom: r.effective_from,
-      };
-    } else if (status === "mendatang" && !upcomingRates[r.name]) {
-      upcomingRates[r.name] = {
         amount: r.amount,
         effectiveFrom: r.effective_from,
       };
     }
   });
 
-  const allDueTypeNames = [
-    ...new Set([...Object.keys(activeRates), ...Object.keys(upcomingRates)]),
-  ];
+  const allDueTypeNames = Object.keys(activeRates);
 
   const handleRateSubmit = async (data: DueTypeRateInput) => {
     try {
@@ -77,12 +69,7 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
   };
 
   const handleDeleteRate = async (id: number) => {
-    if (
-      !window.confirm(
-        "Yakin ingin menghapus tarif ini? Jika ini tarif mendatang, tarif sebelumnya akan kembali aktif.",
-      )
-    )
-      return;
+    if (!window.confirm("Yakin ingin menghapus tarif ini?")) return;
     await deleteRate(id);
   };
 
@@ -92,8 +79,8 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
         <div className="text-start">
           <h3 className="text-base font-semibold text-gray-900">Tarif Iuran</h3>
           <p className="text-sm text-gray-500">
-            Perubahan tarif akan otomatis menutup tarif aktif sebelumnya dan
-            menyimpan histori.
+            Perubahan tarif langsung berlaku saat disimpan dan otomatis menutup
+            tarif sebelumnya.
           </p>
         </div>
         {!showRateForm && (
@@ -111,11 +98,10 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
       <div className="flex flex-wrap gap-4">
         {allDueTypeNames.map((name) => {
           const active = activeRates[name];
-          const upcoming = upcomingRates[name];
           return (
             <div
               key={name}
-              className="flex-1 shrink-0 basis-[calc(25%-1rem)] min-w-[200px] rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"
+              className="flex-1 shrink-0 basis-[calc(25%-1rem)] min-w-50 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"
             >
               <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                 Iuran {name}
@@ -136,16 +122,6 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
                 <p className="mt-1 text-sm italic text-gray-400">
                   Belum ada tarif aktif
                 </p>
-              )}
-              {upcoming && (
-                <div className="mt-2 rounded border border-yellow-200 bg-yellow-50 px-2 py-1">
-                  <span className="text-xs font-medium text-yellow-700">
-                    Mendatang: {formatRupiah(upcoming.amount)}
-                  </span>
-                  <span className="ml-1 text-xs text-yellow-600">
-                    , {upcoming.effectiveFrom.slice(0, 10)}
-                  </span>
-                </div>
               )}
             </div>
           );

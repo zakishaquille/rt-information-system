@@ -1,12 +1,20 @@
-import React from 'react';
-import type { DueTypeRate } from '../types';
+import React from "react";
+import { RateStatus } from "../types";
+import type { DueTypeRate, RateStatusType } from "../types";
 
 const formatRupiah = (amount: string | number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(amount));
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(Number(amount));
 
 interface DueTypeRateHistoryProps {
   rates: DueTypeRate[];
-  getRateStatus: (r: { effective_from: string; effective_to: string | null }) => 'aktif' | 'mendatang' | 'expired';
+  getRateStatus: (r: {
+    effective_from: string;
+    effective_to: string | null;
+  }) => RateStatusType;
   onDeleteRate: (id: number) => void;
 }
 
@@ -26,8 +34,20 @@ export const DueTypeRateHistory: React.FC<DueTypeRateHistoryProps> = ({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              {['Jenis', 'Nominal', 'Berlaku Mulai', 'Berlaku Sampai', 'Status', 'Aksi'].map((h) => (
-                <th key={h} className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">{h}</th>
+              {[
+                "Jenis",
+                "Nominal",
+                "Berlaku Mulai",
+                "Berlaku Sampai",
+                "Status",
+                "Aksi",
+              ].map((h) => (
+                <th
+                  key={h}
+                  className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                >
+                  {h}
+                </th>
               ))}
             </tr>
           </thead>
@@ -36,25 +56,32 @@ export const DueTypeRateHistory: React.FC<DueTypeRateHistoryProps> = ({
               const status = getRateStatus(r);
               return (
                 <tr key={r.id}>
-                  <td className="px-4 py-2 text-sm capitalize text-gray-900">{r.name}</td>
-                  <td className="px-4 py-2 text-sm text-gray-700">{formatRupiah(r.amount)}</td>
-                  <td className="px-4 py-2 text-sm text-gray-700">{r.effective_from.slice(0, 10)}</td>
+                  <td className="px-4 py-2 text-sm capitalize text-gray-900">
+                    {r.name}
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-700">
+                    {formatRupiah(r.amount)}
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-700">
+                    {r.effective_from.slice(0, 10)}
+                  </td>
                   <td className="px-4 py-2 text-sm text-gray-500">
-                    {r.effective_to ? r.effective_to.slice(0, 10) : '—'}
+                    {r.effective_to ? r.effective_to.slice(0, 10) : "—"}
                   </td>
                   <td className="px-4 py-2">
-                    {status === 'aktif' && (
-                      <span className="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">Aktif</span>
+                    {status === RateStatus.ACTIVE && (
+                      <span className="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                        Aktif
+                      </span>
                     )}
-                    {status === 'mendatang' && (
-                      <span className="inline-flex rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-semibold text-yellow-700">Mendatang</span>
-                    )}
-                    {status === 'expired' && (
-                      <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-500">Expired</span>
+                    {status === RateStatus.EXPIRED && (
+                      <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-500">
+                        Expired
+                      </span>
                     )}
                   </td>
                   <td className="px-4 py-2 text-right text-sm">
-                    {(status === 'aktif' || status === 'mendatang') && (
+                    {status === RateStatus.ACTIVE && (
                       <button
                         type="button"
                         onClick={() => onDeleteRate(r.id)}

@@ -258,11 +258,11 @@ Akses URL publik (tanpa login)
 |-------|--------|
 | **Deskripsi** | Pengaturan tarif iuran dan konfigurasi umum aplikasi |
 | **Tarif iuran** | RT bisa **menambah jenis iuran baru** (free-form, misal: Satpam, Kebersihan, Sampah) dan mengatur tarifnya. Default seeded: Satpam Rp 100.000, Kebersihan Rp 15.000 |
-| **Aturan tanggal** | `effective_from` hanya boleh hari ini atau masa depan — tidak bisa backdate. Tanggal hari ini = tarif langsung aktif. Tanggal masa depan = tarif terjadwal (status: **Mendatang**) |
-| **Status tarif** | **Aktif**: `effective_from` ≤ hari ini AND (`effective_to` IS NULL OR `effective_to` ≥ hari ini). **Mendatang**: `effective_from` > hari ini. **Expired**: `effective_to` IS NOT NULL AND `effective_to` < hari ini |
-| **Pergantian tarif** | Saat tarif baru dibuat, semua tarif yang masih terbuka (aktif maupun mendatang) untuk jenis yang sama otomatis ditutup: `effective_to` = `new.effective_from` − 1 hari |
-| **Hapus tarif** | RT dapat menghapus tarif berstatus Aktif atau Mendatang. Jika tarif Mendatang dihapus, tarif aktif sebelumnya akan otomatis "terbuka" kembali (`effective_to` di-set menjadi NULL). Tarif Expired tidak dapat dihapus untuk menjaga integritas histori tagihan |
-| **Tampilan Grid Iuran** | Grid informasi jenis iuran hanya menampilkan jenis iuran yang memiliki tarif Aktif atau Mendatang. Jika semua tarif untuk suatu jenis dihapus/expired, jenis iuran tersebut dianggap tidak berlaku lagi dan hilang dari grid (namun tetap ada di histori) |
+| **Aturan tanggal** | Tarif baru selalu berlaku mulai hari ini (server-side). Tidak ada input tanggal manual |
+| **Status tarif** | **Aktif**: `effective_to` IS NULL OR `effective_to` ≥ hari ini. **Expired**: `effective_to` IS NOT NULL AND `effective_to` < hari ini |
+| **Pergantian tarif** | Saat tarif baru dibuat, tarif aktif untuk jenis yang sama otomatis ditutup: `effective_to` = hari ini − 1 hari |
+| **Hapus tarif** | RT dapat menghapus tarif berstatus Aktif. Tarif Expired tidak dapat dihapus untuk menjaga integritas histori tagihan. Jika tarif Aktif sudah digunakan dalam data pembayaran (`payments`), tarif tersebut tidak akan dihapus (hard delete), melainkan di-set menjadi Expired (`effective_to` hari ini dikurangi 1 hari) untuk mempertahankan history pembayaran. |
+| **Tampilan Grid Iuran** | Grid informasi jenis iuran hanya menampilkan jenis iuran yang memiliki tarif Aktif. Jika semua tarif untuk suatu jenis dihapus/expired, jenis iuran tersebut dianggap tidak berlaku lagi dan hilang dari grid (namun tetap ada di histori) |
 | **Histori tarif** | Semua riwayat perubahan tarif tersimpan. Tagihan yang sudah tercatat menggunakan tarif (`due_type_rate_id`) pada saat dibuat, bukan tarif terbaru |
 | **Kategori pengeluaran** | Kelola daftar kategori pengeluaran (tambah/edit/hapus) |
 | **Kategori pemasukan lain** | Kelola daftar kategori pemasukan non-iuran (tambah/edit/hapus) |
@@ -396,8 +396,8 @@ erDiagram
         int id PK
         string name "nama jenis iuran bebas, cth: satpam, kebersihan, sampah"
         decimal amount "tarif per bulan"
-        date effective_from "tanggal mulai berlaku; hanya hari ini atau masa depan"
-        date effective_to "nullable — null = masih terbuka (aktif atau mendatang)"
+        date effective_from "tanggal mulai berlaku; selalu diisi server dengan hari ini"
+        date effective_to "nullable — null = masih aktif"
         timestamp created_at
         timestamp updated_at
     }
@@ -407,7 +407,6 @@ erDiagram
         int house_id FK
         int resident_id FK
         int due_type_rate_id FK "tarif saat bayar"
-        enum type "satpam | kebersihan"
         decimal amount "nominal dibayar"
         string period_month "YYYY-MM, bulan yang dibayar"
         date payment_date

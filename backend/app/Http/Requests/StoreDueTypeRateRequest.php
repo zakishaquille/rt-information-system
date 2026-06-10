@@ -18,9 +18,8 @@ class StoreDueTypeRateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'           => ['required', 'string', 'max:100'],
-            'amount'         => ['required', 'numeric', 'min:0'],
-            'effective_from' => ['required', 'date', 'after_or_equal:today'],
+            'name'   => ['required', 'string', 'max:100'],
+            'amount' => ['required', 'numeric', 'min:0'],
         ];
     }
 }

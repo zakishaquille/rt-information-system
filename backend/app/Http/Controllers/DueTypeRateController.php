@@ -21,36 +21,26 @@ class DueTypeRateController extends Controller
     /**
      * Create a new rate for a due type.
      *
-     * Closes all open rates (current or future-pending) for the same due type.
-     * The previous rate ends the day before the new one's effective_from date.
-     * If effective_from is today → rate is immediately active.
-     * If effective_from is a future date → rate is "upcoming" until that date arrives.
+     * The new rate always takes effect immediately (today).
+     * Any currently active rate for the same type is auto-expired.
      */
     public function store(StoreDueTypeRateRequest $request)
     {
         $validated = $request->validated();
 
         $rate = DB::transaction(function () use ($validated) {
-            $newEffectiveFrom = $validated['effective_from'];
-            $closeDate = Carbon::parse($newEffectiveFrom)->subDay()->toDateString();
             $today = now()->toDateString();
+            $closeDate = Carbon::parse($today)->subDay()->toDateString();
 
-            // Close currently active rates (already in effect: effective_from <= today)
+            // Close currently active rates for this due type
             DueTypeRate::where('name', $validated['name'])
                 ->whereNull('effective_to')
-                ->where('effective_from', '<=', $today)
                 ->update(['effective_to' => $closeDate]);
-
-            // Delete future/upcoming rates that never took effect (effective_from > today)
-            DueTypeRate::where('name', $validated['name'])
-                ->whereNull('effective_to')
-                ->where('effective_from', '>', $today)
-                ->delete();
 
             return DueTypeRate::create([
                 'name'           => $validated['name'],
                 'amount'         => $validated['amount'],
-                'effective_from' => $newEffectiveFrom,
+                'effective_from' => $today,
                 'effective_to'   => null,
             ]);
         });
@@ -63,47 +53,31 @@ class DueTypeRateController extends Controller
      *
      * Rules:
      * - Expired rates cannot be deleted (history must be preserved).
-     * - Deleting a "mendatang" (upcoming) rate also reopens any predecessor
-     *   whose effective_to was set by this rate (i.e. effective_to = this.effective_from - 1).
-     * - Deleting an "aktif" rate simply removes it; no predecessor is restored
-     *   because the intent is to retire the due type.
+     * - If the rate is used in payments, it is expired instead of hard-deleted.
+     * - Otherwise it is hard-deleted.
      */
     public function destroy(DueTypeRate $rate)
     {
         $today = now()->toDateString();
-        $fromDate = $rate->effective_from->toDateString();
         $toDate = $rate->effective_to?->toDateString();
 
-        // Determine status
-        $isMendatang = $fromDate > $today;
-        $isAktif = $fromDate <= $today && ($toDate === null || $toDate >= $today);
+        $isActive = ($toDate === null || $toDate >= $today);
 
-        if (!$isMendatang && !$isAktif) {
+        if (!$isActive) {
             return response()->json([
                 'message' => 'Tarif yang sudah expired tidak dapat dihapus karena merupakan data historis.',
             ], 422);
         }
 
-        DB::transaction(function () use ($rate, $isMendatang, $today) {
+        DB::transaction(function () use ($rate, $today) {
             if ($rate->payments()->exists()) {
                 // Rate is used in payments, expire it instead of hard delete
                 $rate->update(['effective_to' => Carbon::parse($today)->subDay()->toDateString()]);
             } else {
-                if ($isMendatang) {
-                    // Reopen the predecessor: find the rate for same name that was closed
-                    // because effective_to == this.effective_from - 1
-                    $expectedCloseDate = $rate->effective_from->subDay()->toDateString();
-
-                    DueTypeRate::where('name', $rate->name)
-                        ->where('effective_to', $expectedCloseDate)
-                        ->where('id', '!=', $rate->id)
-                        ->update(['effective_to' => null]);
-                }
-
                 $rate->delete();
             }
         });
 
-        return response()->json(['message' => 'Tarif berhasil dihapus atau dihentikan.']);
+        return response()->json(['message' => 'Tarif berhasil dihapus.']);
     }
 }

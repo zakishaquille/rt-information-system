@@ -1,3 +1,10 @@
+export const RateStatus = {
+  ACTIVE: "active",
+  EXPIRED: "expired",
+} as const;
+
+export type RateStatusType = (typeof RateStatus)[keyof typeof RateStatus];
+
 export const CategoryType = {
   EXPENSE: "expense",
   INCOME: "income",
@@ -18,7 +25,6 @@ export interface DueTypeRate {
 export interface DueTypeRateInput {
   name: string;
   amount: number;
-  effective_from: string;
 }
 
 export interface TransactionCategory {

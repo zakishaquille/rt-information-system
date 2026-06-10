@@ -97,4 +97,133 @@ class HouseTest extends TestCase
             'status' => 'tidak_dihuni'
         ]);
     }
+
+    public function test_can_show_house()
+    {
+        $house = House::factory()->create();
+
+        $response = $this->actingAs($this->admin)->getJson('/api/houses/' . $house->id);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.id', $house->id)
+            ->assertJsonPath('data.code', $house->code);
+    }
+
+    public function test_can_delete_house()
+    {
+        $house = House::factory()->create();
+
+        $response = $this->actingAs($this->admin)->deleteJson('/api/houses/' . $house->id);
+
+        $response->assertStatus(204);
+
+        $this->assertDatabaseMissing('houses', [
+            'id' => $house->id
+        ]);
+    }
+
+    public function test_can_assign_resident_to_house()
+    {
+        $house = House::factory()->create(['status' => 'tidak_dihuni']);
+        $resident = \App\Models\Resident::factory()->create();
+
+        $data = [
+            'resident_id' => $resident->id,
+            'is_pic' => true,
+        ];
+
+        $response = $this->actingAs($this->admin)->postJson("/api/houses/{$house->id}/residents", $data);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('message', 'Resident assigned successfully');
+
+        $this->assertDatabaseHas('house_residents', [
+            'house_id' => $house->id,
+            'resident_id' => $resident->id,
+            'is_pic' => true,
+            'moved_out_at' => null,
+        ]);
+
+        $this->assertDatabaseHas('houses', [
+            'id' => $house->id,
+            'status' => 'dihuni'
+        ]);
+    }
+
+    public function test_cannot_assign_same_resident_twice()
+    {
+        $house = House::factory()->create();
+        $resident = \App\Models\Resident::factory()->create();
+
+        $house->residents()->attach($resident->id, [
+            'is_pic' => true,
+            'moved_in_at' => now(),
+        ]);
+
+        $data = [
+            'resident_id' => $resident->id,
+            'is_pic' => false,
+        ];
+
+        $response = $this->actingAs($this->admin)->postJson("/api/houses/{$house->id}/residents", $data);
+
+        $response->assertStatus(400)
+            ->assertJsonPath('message', 'Resident is already assigned to this house');
+    }
+
+    public function test_can_unassign_resident_from_house_and_updates_moved_out_at()
+    {
+        $house = House::factory()->create(['status' => 'dihuni']);
+        $resident = \App\Models\Resident::factory()->create();
+
+        // Attach resident to house
+        $house->residents()->attach($resident->id, [
+            'is_pic' => true,
+            'moved_in_at' => now()->subDays(10),
+        ]);
+
+        $response = $this->actingAs($this->admin)->deleteJson("/api/houses/{$house->id}/residents/{$resident->id}");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('message', 'Resident unassigned successfully');
+
+        // Check pivot table
+        $this->assertDatabaseHas('house_residents', [
+            'house_id' => $house->id,
+            'resident_id' => $resident->id,
+        ]);
+
+        $pivot = \Illuminate\Support\Facades\DB::table('house_residents')
+            ->where('house_id', $house->id)
+            ->where('resident_id', $resident->id)
+            ->first();
+
+        $this->assertNotNull($pivot->moved_out_at);
+
+        // Check if house status updated to tidak_dihuni because no residents left
+        $this->assertDatabaseHas('houses', [
+            'id' => $house->id,
+            'status' => 'tidak_dihuni'
+        ]);
+    }
+
+    public function test_unassign_does_not_change_house_status_if_others_remain()
+    {
+        $house = House::factory()->create(['status' => 'dihuni']);
+        $resident1 = \App\Models\Resident::factory()->create();
+        $resident2 = \App\Models\Resident::factory()->create();
+
+        $house->residents()->attach($resident1->id, ['moved_in_at' => now()]);
+        $house->residents()->attach($resident2->id, ['moved_in_at' => now()]);
+
+        $response = $this->actingAs($this->admin)->deleteJson("/api/houses/{$house->id}/residents/{$resident1->id}");
+
+        $response->assertStatus(200);
+
+        // House should still be dihuni
+        $this->assertDatabaseHas('houses', [
+            'id' => $house->id,
+            'status' => 'dihuni'
+        ]);
+    }
 }

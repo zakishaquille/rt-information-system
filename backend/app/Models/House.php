@@ -25,4 +25,11 @@ class House extends Model
             }
         });
     }
+
+    public function residents()
+    {
+        return $this->belongsToMany(Resident::class, 'house_residents')
+            ->withPivot('id', 'is_pic', 'moved_in_at', 'moved_out_at')
+            ->withTimestamps();
+    }
 }

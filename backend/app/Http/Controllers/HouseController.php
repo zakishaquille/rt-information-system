@@ -10,7 +10,7 @@ class HouseController extends Controller
 {
     public function index()
     {
-        $houses = House::all();
+        $houses = House::with('residents')->get();
         return response()->json(['data' => $houses]);
     }
 

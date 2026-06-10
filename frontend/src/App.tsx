@@ -5,7 +5,7 @@ import { Login } from "@/features/auth/Login";
 import { apiClient } from "@/api/client";
 import { ToastContainer } from "@/components/ui/ToastContainer";
 
-import { HousesPage, ResidentsPage, ConfigurationsPage } from "@/pages";
+import { HousesPage, ResidentsPage, ConfigurationsPage, PaymentsPage } from "@/pages";
 
 const Dashboard: React.FC = () => {
   const { user, setUser } = useAuthStore();
@@ -55,6 +55,14 @@ const Dashboard: React.FC = () => {
             Residents
           </Link>
           <Link
+            to="/payments"
+            className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+              location.pathname.startsWith('/payments') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Iuran
+          </Link>
+          <Link
             to="/configurations"
             className={`pb-2 px-1 border-b-2 font-medium text-sm ${
               location.pathname.startsWith('/configurations') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -86,26 +94,27 @@ function App() {
   }
 
   return (
-<>
+    <>
       <ToastContainer />
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/login"
-          element={isAuthenticated ? <Navigate to="/" /> : <Login />}
-        />
-        <Route
-          path="/"
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
-        >
-          <Route index element={<Navigate to="/houses" replace />} />
-          <Route path="houses" element={<HousesPage />} />
-          <Route path="residents" element={<ResidentsPage />} />
-          <Route path="configurations" element={<ConfigurationsPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-</>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/login"
+            element={isAuthenticated ? <Navigate to="/" /> : <Login />}
+          />
+          <Route
+            path="/"
+            element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+          >
+            <Route index element={<Navigate to="/houses" replace />} />
+            <Route path="houses" element={<HousesPage />} />
+            <Route path="residents" element={<ResidentsPage />} />
+            <Route path="payments" element={<PaymentsPage />} />
+            <Route path="configurations" element={<ConfigurationsPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 

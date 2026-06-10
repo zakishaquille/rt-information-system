@@ -163,14 +163,26 @@ export const HousesList: React.FC = () => {
       </div>
 
       {(isAdding || editingHouse) && (
-        <HouseForm
-          editingHouse={editingHouse}
-          formData={formData}
-          loading={loading}
-          onInputChange={handleInputChange}
-          onSubmit={handleSubmit}
-          onCancel={cancelEdit}
-        />
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-6 border shadow-sm rounded-md max-w-lg w-full relative">
+            <button
+              onClick={cancelEdit}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl leading-none"
+            >
+              &times;
+            </button>
+            <h3 className="text-lg font-medium mb-4">
+              {editingHouse ? "Edit Rumah" : "Tambah Rumah"}
+            </h3>
+            <HouseForm
+              formData={formData}
+              loading={loading}
+              onInputChange={handleInputChange}
+              onSubmit={handleSubmit}
+              onCancel={cancelEdit}
+            />
+          </div>
+        </div>
       )}
 
       {managingResidentsHouse && (

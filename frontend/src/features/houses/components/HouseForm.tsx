@@ -1,17 +1,17 @@
 import React from "react";
-import { HouseStatus, type House, type HouseInput } from "../types";
+import { HouseStatus, type HouseInput } from "../types";
 
 interface HouseFormProps {
-  editingHouse: House | null;
   formData: HouseInput;
   loading: boolean;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  onInputChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
 }
 
 export const HouseForm: React.FC<HouseFormProps> = ({
-  editingHouse,
   formData,
   loading,
   onInputChange,
@@ -19,10 +19,7 @@ export const HouseForm: React.FC<HouseFormProps> = ({
   onCancel,
 }) => {
   return (
-    <form onSubmit={onSubmit} className="bg-white p-6 rounded shadow border">
-      <h3 className="text-lg font-medium mb-4">
-        {editingHouse ? "Edit Rumah" : "Tambah Rumah Baru"}
-      </h3>
+    <form onSubmit={onSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
           <label className="block text-sm font-medium text-gray-700">

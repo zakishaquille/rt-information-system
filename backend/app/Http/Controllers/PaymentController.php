@@ -49,6 +49,29 @@ class PaymentController extends Controller
         return response()->json(['data' => $payment], 201);
     }
 
+    public function storeAnnual(Request $request)
+    {
+        $validated = $request->validate([
+            'house_id' => 'required|exists:houses,id',
+            'resident_id' => 'required|exists:residents,id',
+            'due_type_rate_id' => 'required|exists:due_type_rates,id',
+            'year' => 'required|integer|min:2000|max:2100',
+            'payment_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        $this->service->recordAnnualPayment(
+            $validated['house_id'],
+            $validated['resident_id'],
+            $validated['due_type_rate_id'],
+            $validated['year'],
+            $validated['payment_date'],
+            $validated['notes'] ?? null
+        );
+
+        return response()->json(['message' => 'Annual payment recorded successfully'], 201);
+    }
+
     public function destroy($id)
     {
         $this->service->deletePayment($id);

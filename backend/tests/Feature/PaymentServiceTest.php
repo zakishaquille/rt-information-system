@@ -239,4 +239,84 @@ class PaymentServiceTest extends TestCase
         
         $this->assertEmpty($active);
     }
+
+    public function test_record_annual_payment_creates_12_records()
+    {
+        $house = House::factory()->create();
+        $resident = Resident::factory()->create();
+        $house->residents()->attach($resident->id, ['is_pic' => true, 'moved_in_at' => now()->subMonth()]);
+
+        $rate = DueTypeRate::create([
+            'name' => 'satpam',
+            'amount' => 100000,
+            'effective_from' => '2026-01-01',
+        ]);
+
+        $this->service->recordAnnualPayment(
+            $house->id,
+            $resident->id,
+            $rate->id,
+            2026,
+            '2026-01-15',
+            'Bayar setahun bos'
+        );
+
+        $this->assertDatabaseCount('payments', 12);
+        
+        // Assert first and last months
+        $this->assertDatabaseHas('payments', [
+            'house_id' => $house->id,
+            'period_month' => '2026-01',
+            'due_type_rate_id' => $rate->id,
+            'amount' => 100000,
+            'notes' => 'Bayar setahun bos',
+        ]);
+        
+        $this->assertDatabaseHas('payments', [
+            'house_id' => $house->id,
+            'period_month' => '2026-12',
+            'due_type_rate_id' => $rate->id,
+        ]);
+    }
+
+    public function test_record_annual_payment_skips_existing_payments()
+    {
+        $house = House::factory()->create();
+        $resident = Resident::factory()->create();
+        $house->residents()->attach($resident->id, ['is_pic' => true, 'moved_in_at' => now()->subMonth()]);
+
+        $rate = DueTypeRate::create([
+            'name' => 'satpam',
+            'amount' => 100000,
+            'effective_from' => '2026-01-01',
+        ]);
+
+        // Already paid for January and March
+        $this->service->recordPayment($house->id, $resident->id, $rate->id, '2026-01', '2026-01-10', 'Already paid Jan');
+        $this->service->recordPayment($house->id, $resident->id, $rate->id, '2026-03', '2026-03-10', 'Already paid Mar');
+
+        // Pay annual
+        $this->service->recordAnnualPayment(
+            $house->id,
+            $resident->id,
+            $rate->id,
+            2026,
+            '2026-04-15',
+            'Bayar sisa tahun'
+        );
+
+        $this->assertDatabaseCount('payments', 12);
+        
+        // January should retain its old note
+        $this->assertDatabaseHas('payments', [
+            'period_month' => '2026-01',
+            'notes' => 'Already paid Jan'
+        ]);
+
+        // February should have new note
+        $this->assertDatabaseHas('payments', [
+            'period_month' => '2026-02',
+            'notes' => 'Bayar sisa tahun'
+        ]);
+    }
 }

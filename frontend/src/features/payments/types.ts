@@ -41,6 +41,15 @@ export interface RecordPaymentPayload {
   notes?: string;
 }
 
+export interface RecordAnnualPaymentPayload {
+  house_id: number;
+  resident_id: number;
+  due_type_rate_id: number;
+  year: number;
+  payment_date: string;
+  notes?: string;
+}
+
 export interface Payment {
   id: number;
   house_id: number;

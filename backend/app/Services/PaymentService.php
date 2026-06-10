@@ -177,6 +177,39 @@ class PaymentService
     }
 
     /**
+     * Record an annual payment (12 months) for a given year.
+     * Skips months that have already been paid for this rate type.
+     */
+    public function recordAnnualPayment(int $houseId, int $residentId, int $dueTypeRateId, int $year, string $paymentDate, ?string $notes = null): void
+    {
+        $rate = DueTypeRate::findOrFail($dueTypeRateId);
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($houseId, $residentId, $dueTypeRateId, $rate, $year, $paymentDate, $notes) {
+            for ($month = 1; $month <= 12; $month++) {
+                $monthStr = str_pad((string)$month, 2, '0', STR_PAD_LEFT);
+                $periodMonth = "$year-$monthStr";
+                
+                $exists = Payment::where('house_id', $houseId)
+                    ->where('due_type_rate_id', $dueTypeRateId)
+                    ->where('period_month', $periodMonth)
+                    ->exists();
+                    
+                if (!$exists) {
+                    Payment::create([
+                        'house_id' => $houseId,
+                        'resident_id' => $residentId,
+                        'due_type_rate_id' => $dueTypeRateId,
+                        'amount' => $rate->amount,
+                        'period_month' => $periodMonth,
+                        'payment_date' => $paymentDate,
+                        'notes' => $notes,
+                    ]);
+                }
+            }
+        });
+    }
+
+    /**
      * Delete a payment record.
      */
     public function deletePayment(int $paymentId): void

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { recordPayment, deletePayment } from "../api";
+import { recordAnnualPayment, recordPayment, deletePayment } from "../api";
 import type { PaymentDetail } from "../types";
 import { toast } from "@/stores/useToastStore";
 import { handleApiError } from "@/utils/apiErrorHelper";
@@ -64,14 +64,19 @@ export function RecordPaymentModal({
           due_type_rate_id: detail.due_type_rate_id,
           period_month: period,
           payment_date: new Date().toISOString().split("T")[0],
-        })
+        }),
       );
       await Promise.all(promises);
 
       toast.success("Semua pembayaran berhasil dicatat.");
       onSuccess();
     } catch (error) {
-      toast.error(await handleApiError(error, "Gagal mencatat pembayaran. Sebagian mungkin tidak tersimpan."));
+      toast.error(
+        await handleApiError(
+          error,
+          "Gagal mencatat pembayaran. Sebagian mungkin tidak tersimpan.",
+        ),
+      );
     } finally {
       setIsSubmitting(null);
     }
@@ -79,8 +84,12 @@ export function RecordPaymentModal({
 
   const handleRevert = async (paymentId: number | null) => {
     if (!paymentId) return;
-    
-    if (!window.confirm("Apakah Anda yakin ingin membatalkan pembayaran ini? Data iuran akan kembali menjadi belum dibayar.")) {
+
+    if (
+      !window.confirm(
+        "Apakah Anda yakin ingin membatalkan pembayaran ini? Data iuran akan kembali menjadi belum dibayar.",
+      )
+    ) {
       return;
     }
 
@@ -96,9 +105,41 @@ export function RecordPaymentModal({
     }
   };
 
+  const handlePayAnnual = async (rateId: number) => {
+    if (
+      !window.confirm(
+        "Bayar 1 Tahun penuh untuk iuran ini? Transaksi ini akan mencatat pembayaran untuk bulan 1-12 tahun ini.",
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(`annual-${rateId}` as unknown as number);
+
+      await recordAnnualPayment({
+        house_id: houseId,
+        resident_id: residentId,
+        due_type_rate_id: rateId,
+        year: year,
+        payment_date: new Date().toISOString().split("T")[0],
+        notes: "Pembayaran 1 Tahun",
+      });
+
+      toast.success("Pembayaran 1 Tahun berhasil dicatat.");
+      onSuccess();
+    } catch (error) {
+      toast.error(
+        await handleApiError(error, "Gagal mencatat pembayaran 1 Tahun."),
+      );
+    } finally {
+      setIsSubmitting(null);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
+      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-slate-800">Record Payment</h2>
@@ -126,7 +167,7 @@ export function RecordPaymentModal({
           </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
           {details.length === 0 ? (
             <p className="text-center text-sm text-slate-500">
               Tidak ada iuran aktif untuk periode ini.
@@ -146,7 +187,10 @@ export function RecordPaymentModal({
                   </p>
                   {detail.is_paid && detail.payer_name && (
                     <p className="text-xs text-slate-500 mt-1">
-                      Dibayar oleh: <span className="font-medium text-slate-700">{detail.payer_name}</span>
+                      Dibayar oleh:{" "}
+                      <span className="font-medium text-slate-700">
+                        {detail.payer_name}
+                      </span>
                     </p>
                   )}
                 </div>
@@ -170,15 +214,27 @@ export function RecordPaymentModal({
                       </button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => handlePay(detail.due_type_rate_id)}
-                      disabled={isSubmitting !== null}
-                      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 transition-colors"
-                    >
-                      {isSubmitting === detail.due_type_rate_id
-                        ? "Proses..."
-                        : "Bayar"}
-                    </button>
+                    <div className="flex flex-col items-end gap-2">
+                      <button
+                        onClick={() => handlePay(detail.due_type_rate_id)}
+                        disabled={isSubmitting !== null}
+                        className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                      >
+                        {isSubmitting === detail.due_type_rate_id
+                          ? "Proses..."
+                          : "Bayar"}
+                      </button>
+                      <button
+                        onClick={() => handlePayAnnual(detail.due_type_rate_id)}
+                        disabled={isSubmitting !== null}
+                        className="w-full rounded-lg bg-slate-100 px-4 py-2 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-200 disabled:opacity-50 transition-colors"
+                      >
+                        {isSubmitting ===
+                        (`annual-${detail.due_type_rate_id}` as unknown as number)
+                          ? "Proses..."
+                          : "Bayar 1 Tahun"}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -195,8 +251,10 @@ export function RecordPaymentModal({
             >
               {isSubmitting === "all" ? "Memproses..." : "Bayar Semua"}
             </button>
-          ) : <div></div>}
-          
+          ) : (
+            <div></div>
+          )}
+
           <button
             onClick={onClose}
             className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors"

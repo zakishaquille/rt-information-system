@@ -93,12 +93,12 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Dependencies:** Task 1.3, Task 1.4
   - **Estimated scope:** Large
 
-- [ ] **Task 2.2: Annual Payments (Story 5)**
+- [x] **Task 2.2: Annual Payments (Story 5)**
   - **Description:** Enhance payment logic to handle 1-year batch payments for each due type.
   - **Acceptance criteria:**
-    - [ ] Annual payment creates 12 distinct monthly payment records for a specific due type inside a DB transaction.
+    - [x] Annual payment creates 12 distinct monthly payment records for a specific due type inside a DB transaction.
   - **Verification:** 
-    - [ ] Tests pass: Verify annual payment splits correctly for the selected due type.
+    - [x] Tests pass: Verify annual payment splits correctly for the selected due type.
   - **Dependencies:** Task 2.1
   - **Estimated scope:** Medium
 

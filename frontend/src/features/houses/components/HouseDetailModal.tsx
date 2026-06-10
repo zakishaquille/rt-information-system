@@ -339,8 +339,11 @@ export const HouseDetailModal: React.FC<HouseDetailModalProps> = ({
                             <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
                               Payer
                             </th>
-                            <th className="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
                               Amount
+                            </th>
+                            <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+                              Notes
                             </th>
                           </tr>
                         </thead>
@@ -361,8 +364,14 @@ export const HouseDetailModal: React.FC<HouseDetailModalProps> = ({
                               <td className="px-4 py-3 whitespace-nowrap text-gray-900">
                                 {payment.resident?.full_name || "-"}
                               </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-right font-semibold text-gray-900">
+                              <td className="px-4 py-3 whitespace-nowrap font-semibold text-gray-900">
                                 {formatRp(payment.amount)}
+                              </td>
+                              <td
+                                className="px-4 py-3 whitespace-nowrap text-gray-500 text-xs truncate max-w-37.5"
+                                title={payment.notes || ""}
+                              >
+                                {payment.notes || "-"}
                               </td>
                             </tr>
                           ))}

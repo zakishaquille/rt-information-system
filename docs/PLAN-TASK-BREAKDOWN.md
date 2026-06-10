@@ -50,14 +50,23 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Files likely touched:** `backend/database/migrations/*residents_table.php`, `backend/database/seeders/ResidentSeeder.php`, `backend/app/Http/Controllers/ResidentController.php`, `frontend/src/features/residents/*`
   - **Estimated scope:** Large
 
-- [ ] **Task 1.4: App Configurations (Rates & Categories) (Story 3)**
-  - **Description:** CRUD for `due_type_rates` (Satpam & Kebersihan) and `transaction_categories`. Includes migrations and seeders for default rates/categories.
+- [x] **Task 1.4: App Configurations (Rates & Categories) (Story 3)**
+  - **Description:** CRUD for `due_type_rates` (jenis iuran bebas, default: Satpam & Kebersihan) and `transaction_categories`. Includes migrations and seeders for default rates/categories.
   - **Acceptance criteria:**
-    - [ ] RT can set effective rates for dues (Default seeded: Satpam 100k, Kebersihan 15k).
-    - [ ] RT can manage expense/income categories (Default seeded categories).
+    - [x] RT dapat **menambah jenis iuran baru** (free-form name, tidak dibatasi Satpam/Kebersihan).
+    - [x] Tarif baru hanya bisa dibuat dengan `effective_from` = hari ini atau masa depan (tidak bisa backdate).
+    - [x] Status tarif ditentukan oleh tanggal: **Aktif** (`effective_from` ≤ hari ini, `effective_to` null) vs **Mendatang** (`effective_from` > hari ini, `effective_to` null).
+    - [x] Saat tarif baru dibuat, semua tarif terbuka (aktif maupun terjadwal) untuk jenis yang sama otomatis ditutup: `effective_to` = `new.effective_from − 1 hari`.
+    - [x] RT dapat menghapus tarif Mendatang (mengembalikan tarif sebelumnya jadi aktif) atau tarif Aktif. Tarif Expired tidak bisa dihapus.
+    - [x] Tampilan grid iuran hanya memunculkan jenis iuran yang memiliki tarif Aktif atau Mendatang.
+    - [x] Histori tarif tersimpan di DB; perubahan tarif tidak mempengaruhi tagihan yang sudah dibuat.
+    - [x] RT dapat kelola kategori pengeluaran & pemasukan (tambah/edit/hapus nama; tipe immutable setelah dibuat).
+    - [x] Database seeded: Satpam Rp 100.000, Kebersihan Rp 15.000; default expense & income categories.
   - **Verification:** 
-    - [ ] Manual check: Modify rate, verify past rate history remains in DB.
+    - [x] Tests pass: `DueTypeRateTest` (11 tests), `TransactionCategoryTest` (8 tests).
+    - [x] Manual check: Set tarif baru dengan tanggal mendatang → status "Mendatang" tampil di UI; tanggal lalu ditolak.
   - **Dependencies:** Task 1.1
+  - **Files touched:** `migrations/..._create_due_type_rates_table`, `migrations/..._create_transaction_categories_table`, `Models/DueTypeRate`, `Models/TransactionCategory`, `Seeders/DueTypeRateSeeder`, `Seeders/TransactionCategorySeeder`, `Controllers/DueTypeRateController`, `Controllers/TransactionCategoryController`, `Requests/StoreDueTypeRateRequest`, `features/configurations/*`
   - **Estimated scope:** Medium
 
 ### Checkpoint: Foundation

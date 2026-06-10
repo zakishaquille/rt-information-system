@@ -215,7 +215,7 @@ Akses URL publik (tanpa login)
 | Aspek | Detail |
 |-------|--------|
 | **Deskripsi** | Pencatatan pembayaran iuran bulanan oleh RT |
-| **Jenis iuran** | Satpam & Kebersihan. Tarif diambil dari konfigurasi (F7) yang bisa diubah RT |
+| **Jenis iuran** | Ditentukan oleh RT melalui konfigurasi (F7). Default: Satpam & Kebersihan. RT bisa menambah jenis iuran baru (misal: Sampah) yang otomatis masuk ke sistem tagihan |
 | **Mode pembayaran** | **Bulanan**: 1 transaksi = 1 bulan. **Tahunan**: 1 transaksi = 12 bulan (dicatat sebagai 1 record transaksi, tetapi status pembayaran per bulan otomatis terisi "Lunas") |
 | **Partial payment** | Warga bisa membayar sebagian (cicilan). Dicatat sebagai transaksi dengan `amount` < tarif penuh. Status bulan tersebut menjadi "Partial" dengan sisa tagihan tercatat. Bulan dianggap "Lunas" jika total pembayaran ≥ tarif. Multiple partial payments bisa mencover 1 bulan |
 | **Refund** | RT bisa melakukan refund atas pembayaran (misal penghuni kontrak pindah). Refund dicatat sebagai transaksi terpisah (tipe: refund) yang mengurangi saldo dan mengubah status bulan terkait sesuai nominal refund |
@@ -257,8 +257,13 @@ Akses URL publik (tanpa login)
 | Aspek | Detail |
 |-------|--------|
 | **Deskripsi** | Pengaturan tarif iuran dan konfigurasi umum aplikasi |
-| **Tarif iuran** | RT bisa mengubah tarif iuran Satpam dan Kebersihan dari UI. Default: Satpam Rp 100.000, Kebersihan Rp 15.000 |
-| **Histori tarif** | Setiap perubahan tarif tercatat dengan tanggal efektif. Tagihan yang sudah tercatat menggunakan tarif pada saat tagihan dibuat, bukan tarif terbaru |
+| **Tarif iuran** | RT bisa **menambah jenis iuran baru** (free-form, misal: Satpam, Kebersihan, Sampah) dan mengatur tarifnya. Default seeded: Satpam Rp 100.000, Kebersihan Rp 15.000 |
+| **Aturan tanggal** | `effective_from` hanya boleh hari ini atau masa depan — tidak bisa backdate. Tanggal hari ini = tarif langsung aktif. Tanggal masa depan = tarif terjadwal (status: **Mendatang**) |
+| **Status tarif** | **Aktif**: `effective_from` ≤ hari ini AND (`effective_to` IS NULL OR `effective_to` ≥ hari ini). **Mendatang**: `effective_from` > hari ini. **Expired**: `effective_to` IS NOT NULL AND `effective_to` < hari ini |
+| **Pergantian tarif** | Saat tarif baru dibuat, semua tarif yang masih terbuka (aktif maupun mendatang) untuk jenis yang sama otomatis ditutup: `effective_to` = `new.effective_from` − 1 hari |
+| **Hapus tarif** | RT dapat menghapus tarif berstatus Aktif atau Mendatang. Jika tarif Mendatang dihapus, tarif aktif sebelumnya akan otomatis "terbuka" kembali (`effective_to` di-set menjadi NULL). Tarif Expired tidak dapat dihapus untuk menjaga integritas histori tagihan |
+| **Tampilan Grid Iuran** | Grid informasi jenis iuran hanya menampilkan jenis iuran yang memiliki tarif Aktif atau Mendatang. Jika semua tarif untuk suatu jenis dihapus/expired, jenis iuran tersebut dianggap tidak berlaku lagi dan hilang dari grid (namun tetap ada di histori) |
+| **Histori tarif** | Semua riwayat perubahan tarif tersimpan. Tagihan yang sudah tercatat menggunakan tarif (`due_type_rate_id`) pada saat dibuat, bukan tarif terbaru |
 | **Kategori pengeluaran** | Kelola daftar kategori pengeluaran (tambah/edit/hapus) |
 | **Kategori pemasukan lain** | Kelola daftar kategori pemasukan non-iuran (tambah/edit/hapus) |
 
@@ -389,10 +394,10 @@ erDiagram
 
     due_type_rates {
         int id PK
-        string name "satpam | kebersihan"
+        string name "nama jenis iuran bebas, cth: satpam, kebersihan, sampah"
         decimal amount "tarif per bulan"
-        date effective_from "tanggal berlaku"
-        date effective_to "nullable, null = masih aktif"
+        date effective_from "tanggal mulai berlaku; hanya hari ini atau masa depan"
+        date effective_to "nullable — null = masih terbuka (aktif atau mendatang)"
         timestamp created_at
         timestamp updated_at
     }

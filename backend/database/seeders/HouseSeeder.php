@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\House;
 
 class HouseSeeder extends Seeder
 {
@@ -12,12 +13,14 @@ class HouseSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\House::factory()->count(15)->create([
-            'status' => 'dihuni',
-        ]);
+        if (House::count() === 0) {
+            House::factory()->count(15)->create([
+                'status' => 'dihuni',
+            ]);
 
-        \App\Models\House::factory()->count(5)->create([
-            'status' => 'tidak_dihuni',
-        ]);
+            House::factory()->count(5)->create([
+                'status' => 'tidak_dihuni',
+            ]);
+        }
     }
 }

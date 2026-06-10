@@ -28,20 +28,16 @@ class TransactionCategorySeeder extends Seeder
         $now = now();
 
         foreach ($expenseCategories as $name) {
-            TransactionCategory::create([
+            TransactionCategory::firstOrCreate([
                 'type'       => 'expense',
                 'name'       => $name,
-                'created_at' => $now,
-                'updated_at' => $now,
             ]);
         }
 
         foreach ($incomeCategories as $name) {
-            TransactionCategory::create([
+            TransactionCategory::firstOrCreate([
                 'type'       => 'income',
                 'name'       => $name,
-                'created_at' => $now,
-                'updated_at' => $now,
             ]);
         }
     }

@@ -23,3 +23,33 @@ export interface PublicHouse {
   total_arrears: string;
   payment_matrix: Record<string, PublicMonthStatus>;
 }
+
+export interface ChartData {
+  month: string;
+  income: number;
+  expense: number;
+  balance: number;
+}
+
+export interface PublicReportSummary {
+  total_balance: number;
+  chart_data: ChartData[];
+}
+
+export interface BreakdownItem {
+  name: string;
+  total: number;
+}
+
+export interface PublicMonthBreakdown {
+  month: string;
+  income: {
+    dues: BreakdownItem[];
+    other: BreakdownItem[];
+    total: number;
+  };
+  expense: {
+    categories: BreakdownItem[];
+    total: number;
+  };
+}

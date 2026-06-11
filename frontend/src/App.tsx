@@ -20,6 +20,7 @@ import { PaymentsPage } from "@/features/payments";
 import { TransactionsPage } from "@/features/transactions";
 import { DashboardPage } from "@/features/dashboard";
 import { PublicBillingPage } from "@/pages/PublicBillingPage";
+import { PublicReportPage } from "@/pages/PublicReportPage";
 
 const Dashboard: React.FC = () => {
   const { user, setUser } = useAuthStore();
@@ -63,6 +64,26 @@ const Dashboard: React.FC = () => {
             Dashboard
           </Link>
           <Link
+            to="/payments"
+            className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+              location.pathname.startsWith("/payments")
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            Tagihan
+          </Link>
+          <Link
+            to="/transactions"
+            className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+              location.pathname.startsWith("/transactions")
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            Kas
+          </Link>
+          <Link
             to="/houses"
             className={`pb-2 px-1 border-b-2 font-medium text-sm ${
               location.pathname.startsWith("/houses")
@@ -83,26 +104,6 @@ const Dashboard: React.FC = () => {
             Residents
           </Link>
           <Link
-            to="/payments"
-            className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-              location.pathname.startsWith("/payments")
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
-          >
-            Iuran
-          </Link>
-          <Link
-            to="/transactions"
-            className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-              location.pathname.startsWith("/transactions")
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
-          >
-            Kas
-          </Link>
-          <Link
             to="/configurations"
             className={`pb-2 px-1 border-b-2 font-medium text-sm ${
               location.pathname.startsWith("/configurations")
@@ -112,6 +113,28 @@ const Dashboard: React.FC = () => {
           >
             Pengaturan
           </Link>
+          <a
+            href="/laporan"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pb-2 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 flex items-center gap-1"
+          >
+            Laporan Publik
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+          </a>
         </div>
 
         <Outlet />
@@ -169,6 +192,14 @@ function App() {
             element={
               <PageWrapper title="Info Tagihan - RTIS">
                 <PublicBillingPage />
+              </PageWrapper>
+            }
+          />
+          <Route
+            path="/laporan"
+            element={
+              <PageWrapper title="Laporan Keuangan - RTIS">
+                <PublicReportPage />
               </PageWrapper>
             }
           />

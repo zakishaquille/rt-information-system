@@ -29,46 +29,58 @@ class TransactionSeeder extends Seeder
         }
 
         for ($i = 12; $i >= 0; $i--) {
-            $month = now()->subMonths($i);
+            $month = now()->subMonths($i)->startOfMonth();
 
             if ($gajiCat) {
-                Transaction::create([
-                    'transaction_category_id' => $gajiCat->id,
-                    'date' => $month->copy()->addDays(25)->format('Y-m-d'),
-                    'amount' => 1500000,
-                    'name' => 'Gaji Satpam Pak Budi',
-                    'note' => 'Gaji bulanan',
-                ]);
+                $date = $month->copy()->addDays(24);
+                if ($date <= now()) {
+                    Transaction::create([
+                        'transaction_category_id' => $gajiCat->id,
+                        'date' => $date->format('Y-m-d'),
+                        'amount' => 1500000,
+                        'name' => 'Gaji Satpam Pak Budi',
+                        'note' => 'Gaji bulanan',
+                    ]);
+                }
             }
 
             if ($kebersihanCat) {
-                Transaction::create([
-                    'transaction_category_id' => $kebersihanCat->id,
-                    'date' => $month->copy()->addDays(26)->format('Y-m-d'),
-                    'amount' => 200000,
-                    'name' => 'Iuran Kebersihan Lingkungan',
-                    'note' => 'Pembayaran petugas sampah',
-                ]);
+                $date = $month->copy()->addDays(25);
+                if ($date <= now()) {
+                    Transaction::create([
+                        'transaction_category_id' => $kebersihanCat->id,
+                        'date' => $date->format('Y-m-d'),
+                        'amount' => 200000,
+                        'name' => 'Iuran Kebersihan Lingkungan',
+                        'note' => 'Pembayaran petugas sampah',
+                    ]);
+                }
             }
 
             if ($listrikCat) {
-                Transaction::create([
-                    'transaction_category_id' => $listrikCat->id,
-                    'date' => $month->copy()->addDays(5)->format('Y-m-d'),
-                    'amount' => 25000,
-                    'name' => 'Token Listrik Pos Satpam',
-                    'note' => 'Token bulanan',
-                ]);
+                $date = $month->copy()->addDays(4);
+                if ($date <= now()) {
+                    Transaction::create([
+                        'transaction_category_id' => $listrikCat->id,
+                        'date' => $date->format('Y-m-d'),
+                        'amount' => 25000,
+                        'name' => 'Token Listrik Pos Satpam',
+                        'note' => 'Token bulanan',
+                    ]);
+                }
             }
 
             if ($sumbanganCat && rand(1, 100) <= 30) {
-                Transaction::create([
-                    'transaction_category_id' => $sumbanganCat->id,
-                    'date' => $month->copy()->addDays(10)->format('Y-m-d'),
-                    'amount' => rand(5, 20) * 100000,
-                    'name' => 'Sumbangan Warga',
-                    'note' => 'Sumbangan sukarela',
-                ]);
+                $date = $month->copy()->addDays(9);
+                if ($date <= now()) {
+                    Transaction::create([
+                        'transaction_category_id' => $sumbanganCat->id,
+                        'date' => $date->format('Y-m-d'),
+                        'amount' => rand(5, 20) * 100000,
+                        'name' => 'Sumbangan Warga',
+                        'note' => 'Sumbangan sukarela',
+                    ]);
+                }
             }
         }
     }

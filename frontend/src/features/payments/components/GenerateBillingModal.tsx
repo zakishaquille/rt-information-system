@@ -77,7 +77,7 @@ export function GenerateBillingModal({
             text += `- ${d.name}: ${formatRp(Number(d.amount))}\n`;
           });
           text += `Total: ${formatRp(amount)}\n`;
-          text += `Link Pembayaran: ${url}`;
+          text += `Link Tagihan: ${url}`;
 
           results.push({
             id: row.house_uuid,

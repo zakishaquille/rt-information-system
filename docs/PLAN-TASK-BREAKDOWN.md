@@ -182,14 +182,14 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
     - `frontend/src/features/payments/components/GenerateBillingModal.tsx`
   - **Estimated scope:** Small
 
-- [ ] **Task 3.5: Public Financial Report API & UI (Story 10)**
+- [x] **Task 3.5: Public Financial Report API & UI (Story 10)**
   - **Description:** Implement a public read-only financial report so residents can see where RT funds are spent.
   - **Acceptance criteria:**
-    - [ ] Backend `GET /api-public/reports` returns necessary chart and breakdown data without authentication.
-    - [ ] Frontend `/laporan` displays the income vs. expense chart and category breakdowns.
+    - [x] Backend `GET /api-public/reports` returns necessary chart and breakdown data without authentication.
+    - [x] Frontend `/laporan` displays the income vs. expense chart and category breakdowns.
   - **Verification:**
-    - [ ] Tests pass: `php artisan test --filter PublicReportTest`
-    - [ ] Manual check: Access `/laporan` in an incognito window and verify charts render correctly.
+    - [x] Tests pass: `php artisan test --filter PublicReportTest`
+    - [x] Manual check: Access `/laporan` in an incognito window and verify charts render correctly.
   - **Dependencies:** Task 3.1
   - **Files likely touched:**
     - `backend/routes/api-public.php`
@@ -198,9 +198,9 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Estimated scope:** Small
 
 ### Checkpoint: Reporting & Public Access
-- [ ] Dashboard charts load accurately with real calculations.
-- [ ] Public URLs (`/tagihan/{uuid}` and `/laporan`) load correctly without auth.
-- [ ] No sensitive data (e.g., KTP, phone numbers) is leaked in public endpoints.
+- [x] Dashboard charts load accurately with real calculations.
+- [x] Public URLs (`/tagihan/{uuid}` and `/laporan`) load correctly without auth.
+- [x] No sensitive data (e.g., KTP, phone numbers) is leaked in public endpoints.
 
 ---
 
@@ -222,15 +222,15 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
     - Various form components across features.
   - **Estimated scope:** Medium
 
-- [ ] **Task 4.2: Comprehensive Seeding for Realistic Demo**
+- [x] **Task 4.2: Comprehensive Seeding for Realistic Demo**
   - **Description:** Enhance the backend DatabaseSeeder to generate a rich, realistic dataset for demonstration purposes.
   - **Acceptance criteria:**
-    - [ ] Seeder generates 20 houses (15 occupied, 5 empty).
-    - [ ] Seeder creates past payments spanning at least 12 months with a mix of lunas, partial, and belum statuses.
-    - [ ] Seeder generates random operational expenses and other incomes so the financial charts look realistic.
+    - [x] Seeder generates 20 houses (15 occupied, 5 empty).
+    - [x] Seeder creates past payments spanning at least 12 months with a mix of lunas, partial, and belum statuses.
+    - [x] Seeder generates random operational expenses and other incomes so the financial charts look realistic.
   - **Verification:**
-    - [ ] Build succeeds: `php artisan migrate:fresh --seed` runs without errors.
-    - [ ] Manual check: Login as admin and verify the dashboard charts are populated with data.
+    - [x] Build succeeds: `php artisan migrate:fresh --seed` runs without errors.
+    - [x] Manual check: Login as admin and verify the dashboard charts are populated with data.
   - **Dependencies:** Task 3.5
   - **Files likely touched:**
     - `backend/database/seeders/*`

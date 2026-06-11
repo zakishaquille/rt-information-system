@@ -237,14 +237,14 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
     - `backend/database/factories/*`
   - **Estimated scope:** Medium
 
-- [ ] **Task 4.3: End-to-End Testing & Bug Fixes**
+- [x] **Task 4.3: End-to-End Testing & Bug Fixes**
   - **Description:** Perform full manual testing of all user flows based on the PRD, and fix any resulting bugs.
   - **Acceptance criteria:**
-    - [ ] All features from Phase 1-3 work together without errors.
-    - [ ] Backend tests coverage is sufficient.
+    - [x] All features from Phase 1-3 work together without errors.
+    - [x] Backend tests coverage is sufficient.
   - **Verification:**
-    - [ ] Tests pass: `php artisan test`
-    - [ ] Manual check: Go through the RT admin flow and public resident flow end-to-end.
+    - [x] Tests pass: `php artisan test`
+    - [x] Manual check: Go through the RT admin flow and public resident flow end-to-end.
   - **Dependencies:** Task 4.1, Task 4.2
   - **Files likely touched:**
     - Various bug fixes across backend and frontend.

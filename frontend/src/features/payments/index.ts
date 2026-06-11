@@ -1,2 +1,3 @@
 export * from "./components/PaymentsPage";
-export type { Payment } from "./types";
+export { PaymentStatus } from "./types";
+export type { Payment, PaymentStatusInterface } from "./types";

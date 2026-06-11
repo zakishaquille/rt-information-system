@@ -19,6 +19,7 @@ import { ConfigurationsPage } from "@/features/configurations";
 import { PaymentsPage } from "@/features/payments";
 import { TransactionsPage } from "@/features/transactions";
 import { DashboardPage } from "@/features/dashboard";
+import { PublicBillingPage } from "@/pages/PublicBillingPage";
 
 const Dashboard: React.FC = () => {
   const { user, setUser } = useAuthStore();
@@ -161,6 +162,14 @@ function App() {
                   <Login />
                 </PageWrapper>
               )
+            }
+          />
+          <Route
+            path="/tagihan/:uuid"
+            element={
+              <PageWrapper title="Info Tagihan - RTIS">
+                <PublicBillingPage />
+              </PageWrapper>
             }
           />
           <Route

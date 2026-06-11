@@ -31,6 +31,23 @@ class PaymentService
         return $matrix;
     }
 
+    /**
+     * Get payment matrix for a single house for a given year.
+     */
+    public function getHouseMatrix(House $house, int $year): ?array
+    {
+        $rates = DueTypeRate::all();
+        $housePayments = Payment::with('resident')
+            ->where('house_id', $house->id)
+            ->where('period_month', 'like', "$year-%")
+            ->get()
+            ->groupBy(function($p) {
+                return $p->house_id . '_' . $p->period_month;
+            });
+
+        return $this->buildHouseRow($house, $year, $rates, $housePayments);
+    }
+
     public function getHousesWithResidents(): Collection
     {
         return House::with(['residents' => function ($q) {

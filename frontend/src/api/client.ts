@@ -41,3 +41,12 @@ export const sanctumClient = ky.create({
   },
   credentials: "include",
 });
+
+// Client for public endpoints
+export const publicClient = ky.create({
+  prefix: `${BACKEND_URL}/api-public`,
+  headers: {
+    Accept: "application/json",
+  },
+  // Public APIs do not require credentials
+});

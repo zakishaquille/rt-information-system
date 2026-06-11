@@ -15,8 +15,11 @@ export const PaymentStatus = {
   NA: "NA",
 } as const;
 
+export type PaymentStatusInterface =
+  (typeof PaymentStatus)[keyof typeof PaymentStatus];
+
 export interface PaymentMonth {
-  status: (typeof PaymentStatus)[keyof typeof PaymentStatus];
+  status: PaymentStatusInterface;
   details: PaymentDetail[];
 }
 

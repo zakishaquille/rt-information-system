@@ -62,6 +62,19 @@ class DashboardService
     public function getChartData(int $monthsCount = 12): array
     {
         $chartData = [];
+        $startDate = now()->subMonths($monthsCount - 1)->startOfMonth();
+
+        // Calculate initial balance before the 12-month period
+        $initialPayments = Payment::where('payment_date', '<', $startDate)->sum('amount');
+        $initialIncomeTx = Transaction::whereHas('category', function ($q) {
+            $q->where('type', 'income');
+        })->where('date', '<', $startDate)->sum('amount');
+        $initialExpenseTx = Transaction::whereHas('category', function ($q) {
+            $q->where('type', 'expense');
+        })->where('date', '<', $startDate)->sum('amount');
+
+        $runningBalance = (float)($initialPayments + $initialIncomeTx - $initialExpenseTx);
+
         for ($i = $monthsCount - 1; $i >= 0; $i--) {
             $month = now()->subMonths($i);
             $start = $month->copy()->startOfMonth();
@@ -75,10 +88,16 @@ class DashboardService
                 $q->where('type', 'expense');
             })->whereBetween('date', [$start, $end])->sum('amount');
 
+            $income = (float)($monthPayments + $monthIncomeTx);
+            $expense = (float)$monthExpenseTx;
+            
+            $runningBalance += ($income - $expense);
+
             $chartData[] = [
                 'month' => $month->format('Y-m'),
-                'income' => (float)($monthPayments + $monthIncomeTx),
-                'expense' => (float)$monthExpenseTx,
+                'income' => $income,
+                'expense' => $expense,
+                'balance' => $runningBalance,
             ];
         }
 

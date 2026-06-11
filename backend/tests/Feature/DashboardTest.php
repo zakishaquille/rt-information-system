@@ -109,5 +109,9 @@ class DashboardTest extends TestCase
         $lastMonthData = $chartData->firstWhere('month', $lastMonth->format('Y-m'));
         $this->assertEquals(50000, $lastMonthData['income']);
         $this->assertEquals(80000, $lastMonthData['expense']);
+
+        // Assert cumulative balances
+        $this->assertEquals(-30000, $lastMonthData['balance']); // 50k - 80k
+        $this->assertEquals(30000, $currentMonthData['balance']); // -30k + 100k - 40k
     }
 }

@@ -2,6 +2,8 @@ import React from "react";
 import {
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -63,53 +65,111 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({ data }) => {
   });
 
   return (
-    <div className="h-[400px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={formattedData}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-          <XAxis
-            dataKey="displayMonth"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "#6B7280", fontSize: 12 }}
-            dy={10}
-          />
-          <YAxis
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: "#6B7280", fontSize: 12 }}
-            tickFormatter={(value) => `Rp ${(value / 1000).toLocaleString("id-ID")}k`}
-            dx={-10}
-          />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: "#F3F4F6" }} />
-          <Legend
-            wrapperStyle={{ paddingTop: "20px" }}
-            iconType="circle"
-          />
-          <Bar
-            dataKey="income"
-            name="Pemasukan"
-            fill="#3B82F6"
-            radius={[4, 4, 0, 0]}
-            maxBarSize={50}
-          />
-          <Bar
-            dataKey="expense"
-            name="Pengeluaran"
-            fill="#EF4444"
-            radius={[4, 4, 0, 0]}
-            maxBarSize={50}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+    <div className="flex flex-col gap-20">
+      <div className="h-[300px] w-full">
+        <h4 className="mb-4 text-sm font-medium text-gray-700">
+          Pemasukan vs Pengeluaran
+        </h4>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={formattedData}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="#E5E7EB"
+            />
+            <XAxis
+              dataKey="displayMonth"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#6B7280", fontSize: 12 }}
+              dy={10}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#6B7280", fontSize: 12 }}
+              tickFormatter={(value) =>
+                `Rp ${(value / 1000).toLocaleString("id-ID")}k`
+              }
+              dx={-10}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "#F3F4F6" }} />
+            <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="circle" />
+            <Bar
+              dataKey="income"
+              name="Pemasukan"
+              fill="#3B82F6"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={50}
+            />
+            <Bar
+              dataKey="expense"
+              name="Pengeluaran"
+              fill="#EF4444"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={50}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="h-[250px] w-full">
+        <h4 className="mb-4 text-sm font-medium text-gray-700">
+          Tren Saldo Sisa
+        </h4>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={formattedData}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="#E5E7EB"
+            />
+            <XAxis
+              dataKey="displayMonth"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#6B7280", fontSize: 12 }}
+              dy={10}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#6B7280", fontSize: 12 }}
+              tickFormatter={(value) =>
+                `Rp ${(value / 1000).toLocaleString("id-ID")}k`
+              }
+              dx={-10}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: "#F3F4F6" }} />
+            <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="circle" />
+            <Line
+              type="monotone"
+              dataKey="balance"
+              name="Saldo Sisa"
+              stroke="#10B981"
+              strokeWidth={3}
+              dot={{ r: 4, fill: "#10B981" }}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

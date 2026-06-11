@@ -13,5 +13,6 @@ export interface DashboardStats {
     month: string;
     income: number;
     expense: number;
+    balance: number;
   }>;
 }

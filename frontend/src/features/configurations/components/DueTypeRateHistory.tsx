@@ -1,13 +1,7 @@
 import React from "react";
 import { RateStatus } from "../types";
 import type { DueTypeRate, RateStatusType } from "../types";
-
-const formatRupiah = (amount: string | number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(amount));
+import { formatRp } from "@/utils/formatRp";
 
 interface DueTypeRateHistoryProps {
   rates: DueTypeRate[];
@@ -60,7 +54,7 @@ export const DueTypeRateHistory: React.FC<DueTypeRateHistoryProps> = ({
                     {r.name}
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-700">
-                    {formatRupiah(r.amount)}
+                    {formatRp(r.amount)}
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-700">
                     {r.effective_from.slice(0, 10)}

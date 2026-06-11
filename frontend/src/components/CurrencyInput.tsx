@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { formatRp } from "@/utils/formatRp";
 
 interface CurrencyInputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -27,7 +28,7 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
     if (isNaN(num)) {
       setDisplayValue("");
     } else {
-      setDisplayValue(new Intl.NumberFormat("id-ID").format(num));
+      setDisplayValue(formatRp(num));
     }
   }, [value]);
 
@@ -44,7 +45,7 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
     const numValue = parseInt(rawValue, 10);
     onChange(numValue);
 
-    setDisplayValue(new Intl.NumberFormat("id-ID").format(numValue));
+    setDisplayValue(formatRp(numValue));
   };
 
   return (

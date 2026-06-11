@@ -1,6 +1,7 @@
 import React from "react";
 import type { Transaction } from "@/features/transactions";
 import { TransactionCategoryTypeEnum } from "@/features/configurations";
+import { formatRp } from "@/utils/formatRp";
 
 interface Props {
   transactions: Transaction[];
@@ -31,14 +32,7 @@ export const TransactionsList: React.FC<Props> = ({
     );
   }
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+
 
   return (
     <div className="overflow-x-auto rounded-lg border bg-white shadow">
@@ -98,7 +92,7 @@ export const TransactionsList: React.FC<Props> = ({
                 {trx.name}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-right font-medium">
-                {formatCurrency(trx.amount)}
+                {formatRp(trx.amount)}
               </td>
               <td className="px-6 py-4 text-gray-500">{trx.note || "-"}</td>
               <td className="whitespace-nowrap px-6 py-4 text-right">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { usePaymentMatrix } from "../hooks/usePayments";
 import { RecordPaymentModal } from "./RecordPaymentModal";
 import { PaymentStatus, type PaymentDetail } from "../types";
+import { formatRp } from "@/utils/formatRp";
 
 export function PaymentMatrixTable({
   year,
@@ -65,6 +66,21 @@ export function PaymentMatrixTable({
     }
   };
 
+  const getMonthTotal = (monthStr: string) => {
+    return filteredMatrix.reduce((total, row) => {
+      const cell = row.months[monthStr];
+      if (cell && cell.details) {
+        return (
+          total +
+          cell.details.reduce((sum, detail) => {
+            return detail.is_paid ? sum + Number(detail.amount) : sum;
+          }, 0)
+        );
+      }
+      return total;
+    }, 0);
+  };
+
   // Derive selected cell details from the latest data
   let selectedCellDetails: PaymentDetail[] = [];
   let selectedHouseCode = "";
@@ -85,6 +101,21 @@ export function PaymentMatrixTable({
     <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-600">
+          <thead className="border-b border-slate-200 bg-slate-50 font-semibold text-slate-800">
+            <tr>
+              <td className="p-4 sticky left-0 bg-slate-50 shadow-[1px_0_0_0_#e2e8f0] text-left text-xs uppercase tracking-wider">
+                Total Pemasukan Iuran:
+              </td>
+              {months.map((m) => (
+                <td
+                  key={m}
+                  className="p-3 text-center text-xs whitespace-nowrap text-emerald-700"
+                >
+                  {formatRp(getMonthTotal(m))}
+                </td>
+              ))}
+            </tr>
+          </thead>
           <thead className="border-b border-slate-200 bg-slate-50 text-slate-800">
             <tr>
               <th className="p-4 font-semibold whitespace-nowrap min-w-50 sticky left-0 bg-slate-50 z-10 shadow-[1px_0_0_0_#e2e8f0]">

@@ -7,13 +7,7 @@ import {
 } from "../types";
 import { DueTypeRateForm } from "./DueTypeRateForm";
 import { DueTypeRateHistory } from "./DueTypeRateHistory";
-
-const formatRupiah = (amount: string | number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(amount));
+import { formatRp } from "@/utils/formatRp";
 
 const today = () => new Date().toISOString().split("T")[0];
 
@@ -109,7 +103,7 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
               {active ? (
                 <>
                   <p className="mt-0.5 text-xl font-bold text-gray-900">
-                    {formatRupiah(active.amount)}
+                    {formatRp(active.amount)}
                   </p>
                   <p className="mt-0.5 text-xs text-gray-400">
                     Berlaku sejak {active.effectiveFrom.slice(0, 10)}

@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('payments/annual', [\App\Http\Controllers\PaymentController::class, 'storeAnnual']);
     Route::post('payments', [\App\Http\Controllers\PaymentController::class, 'store']);
     Route::delete('payments/{payment}', [\App\Http\Controllers\PaymentController::class, 'destroy']);
+    Route::get('transactions/summary', [\App\Http\Controllers\TransactionController::class, 'summary']);
     Route::apiResource('transactions', \App\Http\Controllers\TransactionController::class);
 
     Route::apiResource('transaction-categories', \App\Http\Controllers\TransactionCategoryController::class);

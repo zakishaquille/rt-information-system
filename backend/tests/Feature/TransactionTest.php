@@ -98,4 +98,96 @@ class TransactionTest extends TestCase
 
         $this->assertDatabaseMissing('transactions', ['id' => $transaction->id]);
     }
+
+    public function test_can_get_transaction_summary_semua_waktu()
+    {
+        \App\Models\Payment::factory()->create(['amount' => 500, 'payment_date' => '2023-01-15', 'period_month' => '2023-01']);
+        \App\Models\Payment::factory()->create(['amount' => 500, 'payment_date' => '2023-02-15', 'period_month' => '2023-02']);
+        
+        $incomeCat = TransactionCategory::create(['name' => 'Donasi', 'type' => 'income']);
+        $expenseCat = TransactionCategory::create(['name' => 'Gaji', 'type' => 'expense']);
+
+        Transaction::create([
+            'transaction_category_id' => $incomeCat->id,
+            'type' => 'income',
+            'date' => '2023-01-20',
+            'amount' => 1000,
+            'name' => 'Donasi warga'
+        ]);
+        
+        Transaction::create([
+            'transaction_category_id' => $expenseCat->id,
+            'type' => 'expense',
+            'date' => '2023-01-25',
+            'amount' => 200,
+            'name' => 'Beli sapu'
+        ]);
+
+        Transaction::create([
+            'transaction_category_id' => $expenseCat->id,
+            'type' => 'expense',
+            'date' => '2023-02-05',
+            'amount' => 300,
+            'name' => 'Beli pel'
+        ]);
+
+        $response = $this->actingAs($this->user)->getJson('/api/transactions/summary');
+        
+        $response->assertStatus(200)
+                 ->assertJsonPath('data.pemasukan_iuran', 1000)
+                 ->assertJsonPath('data.pemasukan_lain', 1000)
+                 ->assertJsonPath('data.pengeluaran', 500)
+                 ->assertJsonPath('data.saldo_sisa', 1500);
+    }
+
+    public function test_can_get_transaction_summary_filtered_by_month()
+    {
+        \App\Models\Payment::factory()->create(['amount' => 500, 'payment_date' => '2023-01-15', 'period_month' => '2023-01']);
+        \App\Models\Payment::factory()->create(['amount' => 500, 'payment_date' => '2023-02-15', 'period_month' => '2023-02']);
+        
+        $incomeCat = TransactionCategory::create(['name' => 'Donasi', 'type' => 'income']);
+        $expenseCat = TransactionCategory::create(['name' => 'Gaji', 'type' => 'expense']);
+
+        Transaction::create([
+            'transaction_category_id' => $incomeCat->id,
+            'type' => 'income',
+            'date' => '2023-01-20',
+            'amount' => 1000,
+            'name' => 'Donasi warga'
+        ]);
+        
+        Transaction::create([
+            'transaction_category_id' => $expenseCat->id,
+            'type' => 'expense',
+            'date' => '2023-01-25',
+            'amount' => 200,
+            'name' => 'Beli sapu'
+        ]);
+
+        Transaction::create([
+            'transaction_category_id' => $expenseCat->id,
+            'type' => 'expense',
+            'date' => '2023-02-05',
+            'amount' => 300,
+            'name' => 'Beli pel'
+        ]);
+
+        // January Summary
+        $responseJan = $this->actingAs($this->user)->getJson('/api/transactions/summary?month=2023-01');
+        
+        $responseJan->assertStatus(200)
+                 ->assertJsonPath('data.pemasukan_iuran', 500)
+                 ->assertJsonPath('data.pemasukan_lain', 1000)
+                 ->assertJsonPath('data.pengeluaran', 200)
+                 ->assertJsonPath('data.saldo_sisa', 1300); // 500 + 1000 - 200
+                 
+        // February Summary
+        $responseFeb = $this->actingAs($this->user)->getJson('/api/transactions/summary?month=2023-02');
+        
+        $responseFeb->assertStatus(200)
+                 ->assertJsonPath('data.pemasukan_iuran', 500) // Feb only
+                 ->assertJsonPath('data.pemasukan_lain', 0) // Feb only
+                 ->assertJsonPath('data.pengeluaran', 300) // Feb only
+                 ->assertJsonPath('data.saldo_sisa', 1500); // Up to Feb: 1000 + 1000 - 500
+    }
 }

@@ -253,9 +253,9 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
 - [ ] **Task 4.4: Documentation (README & Screenshots)**
   - **Description:** Write a comprehensive README with setup instructions and feature screenshots.
   - **Acceptance criteria:**
-    - [ ] `README.md` includes local setup instructions for both Laravel and React.
-    - [ ] `README.md` details the tech stack and database schema.
-    - [ ] `README.md` includes screenshots of the Dashboard, Matrix View, and Public Tagihan page.
+    - [ ] `README.md` includes local setup instructions for both Laravel and React, both for Mac OS and Windows.
+    - [ ] `README.md` details the tech stack and database schema (ERD).
+    - [ ] `README.md` includes screenshots of all features from phase 1-3.
   - **Verification:**
     - [ ] Manual check: Verify markdown renders correctly and screenshots load.
   - **Dependencies:** Task 4.3

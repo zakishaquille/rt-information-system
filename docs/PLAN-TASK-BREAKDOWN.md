@@ -119,72 +119,154 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
 ---
 
 ### Phase 3: Reporting & Public Access
-- [ ] **Task 3.1: Financial Dashboard & Reports (Story 7)**
-  - **Description:** Build the RT dashboard and graphical reports using the seeded data.
+
+- [ ] **Task 3.1: Dashboard Statistics & Chart API (Backend)**
+  - **Description:** Implement backend endpoints to calculate and return dashboard statistics: current month's financial summary, house occupancy, total running balance, and 12-month income vs expenses chart data.
   - **Acceptance criteria:**
-    - [ ] Dashboard shows total balance (can be negative).
-    - [ ] 12-month bar/line chart of incomes vs expenses displays accurately.
-  - **Verification:** 
-    - [ ] Manual check: Visual validation of charts against dummy data.
+    - [ ] `GET /api/dashboard/stats` returns accurate calculations for total balance (which can be negative).
+    - [ ] Endpoint returns an array of monthly data (income vs expenses) for the past 12 months.
+  - **Verification:**
+    - [ ] Tests pass: `php artisan test --filter DashboardTest`
+    - [ ] Manual check: Hit endpoint with Postman/Insomnia and verify calculations against DB.
   - **Dependencies:** Task 2.3
+  - **Files likely touched:**
+    - `backend/routes/api.php`
+    - `backend/app/Http/Controllers/DashboardController.php`
+    - `backend/app/Services/DashboardService.php`
+    - `backend/tests/Feature/DashboardTest.php`
   - **Estimated scope:** Medium
 
-- [ ] **Task 3.2: Public Billing & Generate URLs (Story 8 & Story 9)**
-  - **Description:** Public read-only page for house billing and RT tool to generate shareable list.
+- [ ] **Task 3.2: Dashboard UI Components & Integration (Frontend)**
+  - **Description:** Build the frontend React Dashboard page to display statistics cards and financial charts using the data from the new API.
   - **Acceptance criteria:**
-    - [ ] `/api-public/houses/{uuid}` returns billing status without authentication.
-    - [ ] Frontend `/tagihan/{uuid}` displays status without exposing personal data.
-    - [ ] Public billing page `/tagihan/{uuid}` displays detailed payment history for the current year (breakdown of dues, payment dates, payer resident name, and status lunas/belum/partial).
-    - [ ] RT can generate a copy-paste ready list of billing URLs for all occupied houses.
-  - **Verification:** 
-    - [ ] Manual check: Access public URL in incognito window.
-    - [ ] Manual check: Verify payment details and payer names are formatted correctly without leaking unnecessary private details (e.g., KTP).
-  - **Dependencies:** Task 2.1
-  - **Estimated scope:** Small
-
-- [ ] **Task 3.3: Public Financial Report (Story 10)**
-  - **Description:** Public read-only financial report.
-  - **Acceptance criteria:**
-    - [ ] `/api-public/reports` returns necessary chart data without authentication.
-    - [ ] Frontend `/laporan` displays the charts for the public.
-  - **Verification:** 
-    - [ ] Manual check: Access report in incognito window.
+    - [ ] Dashboard displays Total Balance, Income this month, and Expense this month in clear stat cards.
+    - [ ] 12-month bar/line chart accurately renders the income vs. expense data.
+  - **Verification:**
+    - [ ] Build succeeds: `npm run build`
+    - [ ] Manual check: Load the dashboard and visually validate charts against seeded dummy data.
   - **Dependencies:** Task 3.1
+  - **Files likely touched:**
+    - `frontend/src/pages/DashboardPage.tsx`
+    - `frontend/src/features/dashboard/components/*`
+    - `frontend/src/features/dashboard/api/*`
+  - **Estimated scope:** Medium
+
+- [ ] **Task 3.3: Public Billing API & UI (Story 9)**
+  - **Description:** Implement the read-only public billing page for residents. They can view their house's billing status via a unique URL without logging in.
+  - **Acceptance criteria:**
+    - [ ] Backend `GET /api-public/houses/{uuid}` returns house and payment status without authentication.
+    - [ ] Frontend `/tagihan/{uuid}` displays payment history for the current year (dues breakdown, payment dates, payer, and lunas/belum/partial status).
+    - [ ] Personal data (like KTP) is strictly NOT exposed in the public API.
+  - **Verification:**
+    - [ ] Tests pass: `php artisan test --filter PublicBillingTest`
+    - [ ] Manual check: Access public URL in an incognito window and verify the UI.
+  - **Dependencies:** Task 2.1
+  - **Files likely touched:**
+    - `backend/routes/api-public.php`
+    - `backend/app/Http/Controllers/PublicHouseController.php`
+    - `backend/app/Http/Resources/PublicHouseResource.php`
+    - `frontend/src/pages/PublicBillingPage.tsx`
+    - `frontend/src/features/public/*`
+  - **Estimated scope:** Medium
+
+- [ ] **Task 3.4: Generate Billing URLs Tool (Story 8)**
+  - **Description:** Build a tool for the RT admin to generate a copy-paste ready list of billing URLs for all occupied houses, filtered by month.
+  - **Acceptance criteria:**
+    - [ ] RT can view a list of all occupied houses with outstanding dues for a selected month.
+    - [ ] List includes house number, PIC name, arrears amount, and the unique public URL.
+    - [ ] A "Copy to Clipboard" button formats the list nicely for WhatsApp sharing.
+  - **Verification:**
+    - [ ] Manual check: Select a month, generate the list, click copy, and paste into a text editor to verify formatting.
+  - **Dependencies:** Task 3.3
+  - **Files likely touched:**
+    - `frontend/src/features/payments/components/GenerateBillingModal.tsx`
   - **Estimated scope:** Small
 
-### Checkpoint: Public Access Complete
-- [ ] Public URLs load correctly without auth and show accurate data.
-- [ ] Admin dashboard and report generators function flawlessly.
+- [ ] **Task 3.5: Public Financial Report API & UI (Story 10)**
+  - **Description:** Implement a public read-only financial report so residents can see where RT funds are spent.
+  - **Acceptance criteria:**
+    - [ ] Backend `GET /api-public/reports` returns necessary chart and breakdown data without authentication.
+    - [ ] Frontend `/laporan` displays the income vs. expense chart and category breakdowns.
+  - **Verification:**
+    - [ ] Tests pass: `php artisan test --filter PublicReportTest`
+    - [ ] Manual check: Access `/laporan` in an incognito window and verify charts render correctly.
+  - **Dependencies:** Task 3.1
+  - **Files likely touched:**
+    - `backend/routes/api-public.php`
+    - `backend/app/Http/Controllers/PublicReportController.php`
+    - `frontend/src/pages/PublicReportPage.tsx`
+  - **Estimated scope:** Small
+
+### Checkpoint: Reporting & Public Access
+- [ ] Dashboard charts load accurately with real calculations.
+- [ ] Public URLs (`/tagihan/{uuid}` and `/laporan`) load correctly without auth.
+- [ ] No sensitive data (e.g., KTP, phone numbers) is leaked in public endpoints.
 
 ---
 
 ### Phase 4: Finalization & Polish
-- [ ] **Task 4.1: UI Polish & Error Handling**
-  - **Description:** Refine UI/UX, ensure all edge cases are handled gracefully, and add comprehensive error messages/toast notifications.
+
+- [ ] **Task 4.1: UI Polish, Loading States, & Error Handling**
+  - **Description:** Systematically review all frontend pages to ensure loading states (skeletons/spinners) are present, errors are handled gracefully via toasts, and UI is responsive on mobile.
   - **Acceptance criteria:**
-    - [ ] Loading states and error toasts implemented across all forms and API interactions.
-    - [ ] UI is responsive, intuitive, and aligns with the intended aesthetic.
-  - **Dependencies:** All previous phases.
+    - [ ] All API requests have visible loading states.
+    - [ ] Global error interceptor displays user-friendly toast notifications for 4xx/5xx errors.
+    - [ ] Forms have proper client-side validation and display validation errors inline.
+  - **Verification:**
+    - [ ] Manual check: Throttle network in DevTools to verify loading states.
+    - [ ] Manual check: Trigger intentional errors (e.g., submit empty form) to verify toasts/inline errors.
+  - **Dependencies:** All previous tasks.
+  - **Files likely touched:**
+    - `frontend/src/api/client.ts`
+    - `frontend/src/components/ui/*`
+    - Various form components across features.
   - **Estimated scope:** Medium
 
-- [ ] **Task 4.2: Comprehensive Testing & Bug Fixes**
-  - **Description:** Perform full end-to-end manual testing of all features and fix any identified bugs. Ensure the complete data seeding works seamlessly to provide a realistic demo environment.
+- [ ] **Task 4.2: Comprehensive Seeding for Realistic Demo**
+  - **Description:** Enhance the backend DatabaseSeeder to generate a rich, realistic dataset for demonstration purposes.
+  - **Acceptance criteria:**
+    - [ ] Seeder generates 20 houses (15 occupied, 5 empty).
+    - [ ] Seeder creates past payments spanning at least 12 months with a mix of lunas, partial, and belum statuses.
+    - [ ] Seeder generates random operational expenses and other incomes so the financial charts look realistic.
+  - **Verification:**
+    - [ ] Build succeeds: `php artisan migrate:fresh --seed` runs without errors.
+    - [ ] Manual check: Login as admin and verify the dashboard charts are populated with data.
+  - **Dependencies:** Task 3.5
+  - **Files likely touched:**
+    - `backend/database/seeders/*`
+    - `backend/database/factories/*`
+  - **Estimated scope:** Medium
+
+- [ ] **Task 4.3: End-to-End Testing & Bug Fixes**
+  - **Description:** Perform full manual testing of all user flows based on the PRD, and fix any resulting bugs.
   - **Acceptance criteria:**
     - [ ] All features from Phase 1-3 work together without errors.
-    - [ ] `php artisan migrate:fresh --seed` produces a fully working, realistic demo environment.
-  - **Dependencies:** Task 4.1
+    - [ ] Backend tests coverage is sufficient.
+  - **Verification:**
+    - [ ] Tests pass: `php artisan test`
+    - [ ] Manual check: Go through the RT admin flow and public resident flow end-to-end.
+  - **Dependencies:** Task 4.1, Task 4.2
+  - **Files likely touched:**
+    - Various bug fixes across backend and frontend.
   - **Estimated scope:** Medium
 
-- [ ] **Task 4.3: Documentation (README & Screenshots)**
-  - **Description:** Create a comprehensive README with step-by-step installation instructions, stack overview, and screenshots of key features.
+- [ ] **Task 4.4: Documentation (README & Screenshots)**
+  - **Description:** Write a comprehensive README with setup instructions and feature screenshots.
   - **Acceptance criteria:**
     - [ ] `README.md` includes local setup instructions for both Laravel and React.
+    - [ ] `README.md` details the tech stack and database schema.
     - [ ] `README.md` includes screenshots of the Dashboard, Matrix View, and Public Tagihan page.
-  - **Dependencies:** Task 4.2
+  - **Verification:**
+    - [ ] Manual check: Verify markdown renders correctly and screenshots load.
+  - **Dependencies:** Task 4.3
+  - **Files likely touched:**
+    - `README.md`
+    - `docs/screenshots/*`
   - **Estimated scope:** Small
 
 ### Checkpoint: Complete
-- [ ] Application is production-ready (or ready for user handover).
+- [ ] Application is production-ready.
+- [ ] `php artisan migrate:fresh --seed` produces a fully working demo environment.
 - [ ] Documentation is complete.
 - [ ] Ready for final sign-off.
 

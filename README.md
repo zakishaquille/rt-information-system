@@ -1,12 +1,79 @@
 # RTIS (Sistem Informasi Administrasi RT)
 
-RTIS (Sistem Informasi Administrasi RT) is a centralized web application designed to manage neighborhood (RT) administration efficiently. It allows RT administrators to manage resident data, houses, standard dues (security and cleaning), operational expenses, and payments. Additionally, it provides a transparent, read-only public portal where residents can check their billing status and view neighborhood financial reports without needing to log in.
+RTIS (Sistem Informasi Administrasi RT) adalah aplikasi web terpusat yang dirancang untuk mengelola administrasi RT secara efisien. Aplikasi ini memungkinkan pengurus RT untuk mengelola data penghuni, rumah, iuran standar (keamanan dan kebersihan), pengeluaran operasional, serta pembayaran bulanan. Selain itu, RTIS menyediakan portal publik yang transparan dan *read-only* di mana warga dapat memeriksa status tagihan mereka dan melihat laporan keuangan lingkungan tanpa perlu melakukan login.
 
 ## 🛠 Tech Stack
 
 - **Backend:** Laravel 13.x
 - **Frontend:** React 19.x with strict TypeScript, Zustand, Tailwind CSS 4.x (Vite)
 - **Database:** MySQL 8.x
+
+## 💻 Environment Requirements (Persyaratan Sistem)
+
+Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
+- **PHP** >= 8.2
+- **Composer** (untuk instalasi dependensi backend)
+- **Node.js** >= 18.x
+- **NPM** atau **Yarn** (untuk instalasi dependensi frontend)
+- **MySQL** >= 8.0
+
+## ⚙️ Quick Start
+
+### Instalasi di macOS
+1. **Clone repository ini**
+2. **Setup Backend:**
+   ```bash
+   cd backend
+   cp .env.example .env
+   # Update DB_DATABASE, DB_USERNAME, DB_PASSWORD di dalam .env (jika berbeda dari example)
+   # Atur ADMIN_PASSWORD untuk login ke dashboard admin (default: `secret`)
+
+   composer install
+   php artisan key:generate
+   php artisan storage:link
+   php artisan migrate:fresh --seed
+   php artisan serve
+   ```
+3. **Setup Frontend:**
+   ```bash
+   cd frontend
+   npm install
+   cp .env.example .env
+   # Atur BACKEND_URL (jika berbeda dari example)
+
+   npm run dev
+   ```
+
+### Instalasi di Windows
+1. **Clone repository ini**
+2. **Setup Backend:**
+   ```cmd
+   cd backend
+   copy .env.example .env
+   # Update konfigurasi DB dan ADMIN_PASSWORD di dalam .env (jika berbeda dari example, default password: `secret`)
+
+   composer install
+   php artisan key:generate
+   php artisan storage:link
+   php artisan migrate:fresh --seed
+   php artisan serve
+   ```
+3. **Setup Frontend:**
+   ```cmd
+   cd frontend
+   npm install
+   copy .env.example .env
+   # Atur BACKEND_URL (jika berbeda dari example)
+
+   npm run dev
+   ```
+
+### 🔄 Reset Data / Data Demo
+Jika Anda ingin me-reset keadaan database agar datanya kembali bersih dan rapi seperti sedia kala (sangat berguna untuk keperluan demo atau testing ulang), Anda cukup menjalankan perintah berikut di dalam folder `backend`:
+```bash
+php artisan migrate:fresh --seed
+```
+Perintah ini akan menghapus semua data yang ada dan mengisinya kembali dengan data dummy awal.
 
 ## 🗄 Database Schema (ERD)
 
@@ -101,152 +168,94 @@ erDiagram
     transaction_categories ||--o{ transactions : "kategori"
 ```
 
-- `users`: Stores administrator authentication (RT admin).
-- `houses`: Stores house information (block, number, status) and uniquely generated UUID for public access.
-- `residents`: Stores resident details, including private KTP images.
-- `house_resident`: Pivot table tracking the assignment of residents to houses (many-to-many) with move-in/move-out history.
-- `due_type_rates`: Manages dynamically created due types and their active rates over time.
-- `transaction_categories`: Defines categories for operational income and expenses.
-- `payments`: Tracks monthly dues payments tied to a specific house and due type rate.
-- `transactions`: Records other operational income and expenses outside of standard dues.
+- `users`: Menyimpan data autentikasi administrator (Admin RT).
+- `houses`: Menyimpan informasi rumah (blok, nomor, status) dan UUID unik untuk akses publik.
+- `residents`: Menyimpan detail penghuni, termasuk foto KTP yang bersifat rahasia.
+- `house_resident`: Tabel pivot yang melacak penempatan penghuni pada rumah (many-to-many) beserta riwayat masuk/keluar.
+- `due_type_rates`: Mengelola jenis iuran yang dibuat dinamis beserta tarif aktifnya seiring waktu.
+- `transaction_categories`: Mendefinisikan kategori untuk pemasukan dan pengeluaran operasional.
+- `payments`: Melacak pembayaran iuran bulanan yang terkait dengan rumah tertentu dan tarif jenis iurannya.
+- `transactions`: Mencatat pemasukan dan pengeluaran operasional lainnya di luar iuran bulanan.
 
-## ⚙️ Quick Start
+## 🏗 Arsitektur
 
-### macOS Setup
-1. **Clone the repository**
-2. **Setup Backend:**
-   ```bash
-   cd backend
-   cp .env.example .env
-   # Update DB_DATABASE, DB_USERNAME, DB_PASSWORD in .env
-   # Set ADMIN_PASSWORD for the dashboard login
+RTIS dibangun dengan arsitektur terpisah (decoupled):
+- **Backend (Laravel):** Bertindak murni sebagai server API, menggunakan Sanctum untuk autentikasi SPA berbasis cookie. Logika bisnis diabstraksi ke dalam *Services* sehingga *Controller* tetap ramping. Gambar KTP disimpan di disk privat dan disajikan melalui endpoint API yang dilindungi.
+- **Frontend (React):** *Single Page Application (SPA)* yang menggunakan Vite, mengambil data dari backend melalui endpoint REST standar. State dikelola menggunakan *custom hooks* dan Zustand. Mengimplementasikan penjagaan rute (*route guarding*) yang ketat untuk dashboard dan mengizinkan rute publik untuk fitur pelaporan.
 
-   composer install
-   php artisan key:generate
-   php artisan storage:link
-   php artisan migrate:fresh --seed
-   php artisan serve
-   ```
-3. **Setup Frontend:**
-   ```bash
-   cd frontend
-   npm install
-   cp .env.example .env
-   # Set VITE_API_URL=http://localhost:8000
+## 🚀 Fitur & Demo Aplikasi
 
-   npm run dev
-   ```
+Di bawah ini adalah penjelasan detail dari semua fitur yang diimplementasikan dalam RTIS, beserta tangkapan layar yang mendemonstrasikan fungsionalitas aplikasi.
 
-### Windows Setup
-1. **Clone the repository**
-2. **Setup Backend:**
-   ```cmd
-   cd backend
-   copy .env.example .env
-   # Update DB configurations and ADMIN_PASSWORD in .env
-
-   composer install
-   php artisan key:generate
-   php artisan storage:link
-   php artisan migrate:fresh --seed
-   php artisan serve
-   ```
-3. **Setup Frontend:**
-   ```cmd
-   cd frontend
-   npm install
-   copy .env.example .env
-   # Set VITE_API_URL=http://localhost:8000
-
-   npm run dev
-   ```
-
-### 🔄 Reset Data / Demo Data
-If you want to reset the database state to its original clean condition (highly useful for demo purposes or re-testing), you simply need to run the following command inside the `backend` folder:
-```bash
-php artisan migrate:fresh --seed
-```
-This command will erase all existing data and re-populate it with the initial dummy data.
-
-## 🏗 Architecture
-
-RTIS is built with a decoupled architecture:
-- **Backend (Laravel):** Acts purely as an API server, utilizing Sanctum for SPA cookie-based authentication. Business logic is abstracted into Services, keeping Controllers thin. KTP images are stored in the private disk and served through protected API endpoints.
-- **Frontend (React):** A Single Page Application (SPA) utilizing Vite, fetching data from the backend via standard REST endpoints. State is managed with custom hooks and Zustand. It implements strict route guarding for the dashboard and allows public routing for reporting.
-
-## 🚀 Features & Application Demo
-
-Below is a detailed breakdown of all the features implemented in RTIS, accompanied by screenshots demonstrating the application's functionality.
-
-### 1. Authentication & Security
-The application features a secure admin panel protected by a cookie-based SPA authentication system (Laravel Sanctum). Only authorized neighborhood administrators can access the system.
+### 1. Autentikasi & Keamanan
+Aplikasi ini memiliki panel admin yang aman, dilindungi oleh sistem autentikasi SPA berbasis cookie (Laravel Sanctum). Hanya pengurus RT yang berwenang yang dapat mengakses sistem ini.
 ![Login](docs/screenshots/01-login.png)
 
-### 2. Dashboard & Financial Overview
-The Dashboard provides an immediate overview of the neighborhood's financial health, including:
-- Total Running Balance (Kas).
-- Income and Expenses for the current month.
-- House Occupancy metrics.
-- A 12-month historical bar chart comparing Income vs. Expenses.
+### 2. Dashboard & Ringkasan Keuangan
+Dashboard memberikan ringkasan instan mengenai kesehatan keuangan RT, termasuk:
+- Total Saldo Kas Berjalan.
+- Pemasukan dan Pengeluaran untuk bulan berjalan.
+- Metrik keterisian/okupansi rumah.
+- Grafik batang historis 12 bulan yang membandingkan Pemasukan vs Pengeluaran.
 
 ![Dashboard](docs/screenshots/02-dashboard.png)
 
-### 3. House Management
-Administrators can add, edit, and view all houses within the neighborhood, tracking whether they are occupied or empty.
+### 3. Manajemen Rumah
+Admin dapat menambah, mengedit, dan melihat semua rumah di lingkungan RT, serta melacak apakah rumah tersebut dihuni atau kosong.
 
 ![Houses List](docs/screenshots/03-houses-list.png)
 
-**House Details & History:** Clicking on a house reveals its full payment history for the year and a log of past and present residents who have lived there.
+**Detail & Riwayat Rumah:** Mengklik sebuah rumah akan menampilkan riwayat pembayaran penuh selama satu tahun dan catatan penghuni masa lalu maupun masa kini yang pernah tinggal di sana.
 
 ![House Detail](docs/screenshots/04-house-detail.png)
 ![House History](docs/screenshots/16-house-history.png)
 
-### 4. Resident Management
-A comprehensive list of all registered residents. Administrators can securely upload KTP images (which are stored in private local disks to prevent public exposure).
+### 4. Manajemen Penghuni
+Daftar komprehensif seluruh penghuni yang terdaftar. Admin dapat mengunggah foto KTP secara aman (yang disimpan di disk lokal privat untuk mencegah akses publik).
 ![Residents List](docs/screenshots/05-residents-list.png)
 
-**Resident Registration:** A clean modal form allows for quick data entry and house assignment. Residents can have their KTP photos securely uploaded and previewed within the system.
+**Pendaftaran Penghuni:** Formulir modal yang rapi memungkinkan entri data dan penempatan rumah secara cepat. Penghuni dapat memiliki foto KTP yang diunggah dan dilihat secara aman di dalam sistem.
 
 ![Resident Form](docs/screenshots/06-resident-form.png)
 
-### 5. App Configurations
-Dynamic management of default transaction categories and standard monthly dues (e.g., Satpam & Kebersihan). Administrators can set active rates, and the system automatically closes legacy rates to preserve historical payment integrity.
+### 5. Konfigurasi Aplikasi
+Manajemen dinamis untuk kategori transaksi default dan iuran bulanan standar (misal: Satpam & Kebersihan). Admin dapat mengatur tarif aktif, dan sistem secara otomatis menutup tarif lama untuk menjaga integritas riwayat pembayaran.
 ![Configurations](docs/screenshots/07-configurations.png)
 
-### 6. Monthly Payments Matrix
-The core of the financial system. A powerful matrix table that tracks the payment status of every occupied house for every month of the year. It supports full payments, partial installments, and annual batch payments.
+### 6. Matriks Pembayaran Bulanan
+Inti dari sistem keuangan. Tabel matriks interaktif yang melacak status pembayaran setiap rumah yang dihuni untuk setiap bulan sepanjang tahun. Mendukung pembayaran penuh, cicilan sebagian, dan pembayaran tahunan sekaligus.
 ![Payments Matrix](docs/screenshots/08-payments-matrix.png)
 
-**Recording Payments:** Clicking on a pending month cell opens a modal to easily record a payment for that house and period.
+**Mencatat Pembayaran:** Mengklik sel bulan yang berstatus belum bayar akan membuka modal untuk dengan mudah mencatat pembayaran untuk rumah dan periode tersebut.
 
 ![Payment Modal](docs/screenshots/14-payment-modal.png)
 
-**Billing URLs Generation Tool:** An efficient tool designed to generate a copy-paste ready list of public payment URLs for all residents with arrears in a specific month, optimized for sharing via WhatsApp.
+**Alat Generate URL Tagihan:** Alat efisien yang dirancang untuk menghasilkan daftar URL pembayaran publik yang siap disalin-tempel untuk semua penghuni yang memiliki tunggakan di bulan tertentu, dioptimalkan untuk dibagikan melalui WhatsApp.
 
 ![Generate Billing](docs/screenshots/09-generate-billing.png)
 
-### 7. Operational Transactions
-Records for operational incomes and expenses outside of standard monthly dues. Includes categorization for clean financial reporting.
+### 7. Transaksi Operasional
+Catatan untuk pemasukan dan pengeluaran operasional di luar iuran bulanan standar. Termasuk kategorisasi untuk pelaporan keuangan yang rapi.
 
 ![Transactions List](docs/screenshots/10-transactions-list.png)
 
-**Record Transaction:** Easy-to-use form to log cash inflows and outflows.
+**Catat Transaksi:** Formulir yang mudah digunakan untuk mencatat arus kas masuk dan keluar.
 
 ![Transaction Form](docs/screenshots/11-transaction-form.png)
 
-### 8. Public Transparency Portal
-Residents have access to specific views without needing to log in, ensuring maximum transparency.
+### 8. Portal Transparansi Publik
+Penghuni memiliki akses ke tampilan tertentu tanpa perlu login, memastikan transparansi maksimal.
 
-**Public Billing Page:** A unique URL for each house allowing residents to view their exact payment history, dues breakdown, and any outstanding arrears.
+**Halaman Tagihan Publik:** URL unik untuk setiap rumah yang memungkinkan penghuni untuk melihat riwayat pembayaran pasti mereka, rincian iuran, dan tunggakan yang belum dilunasi.
 
 ![Public Billing](docs/screenshots/12-public-billing.png)
 
-**Public Financial Report:** A high-level overview of the neighborhood's finances, providing charts and expense breakdowns to show residents exactly how RT funds are being utilized.
+**Laporan Keuangan Publik:** Ringkasan tingkat tinggi mengenai keuangan RT, menyediakan grafik dan rincian pengeluaran untuk menunjukkan kepada penghuni secara persis bagaimana dana RT digunakan.
 
 ![Public Report](docs/screenshots/13-public-report.png)
 
-### 9. Fully Responsive & Mobile-Friendly
-The entire web application from complex payment matrices to public portals is fully responsive, ensuring RT administrators and residents have a seamless experience on any device down to mobile view.
+### 9. Responsif Penuh & Ramah Seluler (Mobile-Friendly)
+Seluruh aplikasi web—mulai dari matriks pembayaran yang kompleks hingga portal publik—sepenuhnya responsif, memastikan admin RT dan penghuni mendapatkan pengalaman yang lancar di perangkat apa pun hingga ke tampilan seluler.
 
 <img src="docs/screenshots/14-mobile-view-1.png" alt="Mobile View 1" width="30%" height="auto">
 <img src="docs/screenshots/14-mobile-view-2.png" alt="Mobile View 2" width="30%" height="auto">

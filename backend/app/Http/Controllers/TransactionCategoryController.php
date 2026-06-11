@@ -34,6 +34,10 @@ class TransactionCategoryController extends Controller
 
     public function destroy(TransactionCategory $transactionCategory)
     {
+        if ($transactionCategory->transactions()->exists()) {
+            return response()->json(['message' => 'Kategori ini tidak dapat dihapus karena sedang digunakan dalam transaksi.'], 400);
+        }
+
         $transactionCategory->delete();
         return response()->json(null, 204);
     }

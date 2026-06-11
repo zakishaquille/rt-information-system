@@ -2,12 +2,14 @@ import { useState, useCallback, useEffect } from "react";
 import type { Transaction, TransactionPayload } from "../types";
 import * as api from "../api";
 import { useToastStore } from "@/stores/useToastStore";
+import { useConfirmStore } from "@/stores/useConfirmStore";
 
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const addToast = useToastStore((state) => state.addToast);
+  const confirm = useConfirmStore((state) => state.confirm);
 
   const fetchTransactions = useCallback(async () => {
     setIsLoading(true);
@@ -58,7 +60,13 @@ export const useTransactions = () => {
   };
 
   const deleteTransaction = async (id: number) => {
-    if (!window.confirm("Yakin ingin menghapus transaksi ini?")) return;
+    const isConfirmed = await confirm({
+      title: "Hapus Transaksi",
+      message: "Yakin ingin menghapus transaksi ini?",
+      confirmText: "Hapus",
+      type: "danger",
+    });
+    if (!isConfirmed) return;
 
     setIsSubmitting(true);
     try {

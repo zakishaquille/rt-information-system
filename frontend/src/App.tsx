@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Login } from "@/features/auth/Login";
 import { ToastContainer } from "@/components/ToastContainer";
 import { TopLoadingBar } from "@/components/TopLoadingBar";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 
 import { HousesPage } from "@/features/houses";
 import { ResidentsPage } from "@/features/residents";
@@ -35,6 +36,7 @@ function App() {
     <>
       <TopLoadingBar />
       <ToastContainer />
+      <ConfirmationModal />
       <BrowserRouter>
         <Routes>
           <Route

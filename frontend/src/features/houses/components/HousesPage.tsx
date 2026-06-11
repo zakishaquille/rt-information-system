@@ -8,6 +8,7 @@ import {
 } from "@/features/houses/types";
 import { HouseForm } from "@/features/houses/components/HouseForm";
 import { HouseDetailModal } from "@/features/houses/components/HouseDetailModal";
+import { useConfirmStore } from "@/stores/useConfirmStore";
 
 export const HousesPage: React.FC = () => {
   const {
@@ -23,6 +24,7 @@ export const HousesPage: React.FC = () => {
   const [editingHouse, setEditingHouse] = useState<House | null>(null);
   const [managingResidentsHouse, setManagingResidentsHouse] =
     useState<House | null>(null);
+  const confirm = useConfirmStore((state) => state.confirm);
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState<HouseInput>({
     code: "",
@@ -152,8 +154,14 @@ export const HousesPage: React.FC = () => {
                     Edit
                   </button>
                   <button
-                    onClick={() => {
-                      if (window.confirm("Yakin ingin menghapus rumah ini?")) {
+                    onClick={async () => {
+                      const isConfirmed = await confirm({
+                        title: "Hapus Rumah",
+                        message: "Yakin ingin menghapus rumah ini?",
+                        confirmText: "Hapus",
+                        type: "danger",
+                      });
+                      if (isConfirmed) {
                         deleteHouse(house.id);
                       }
                     }}

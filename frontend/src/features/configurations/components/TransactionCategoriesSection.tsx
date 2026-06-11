@@ -8,6 +8,7 @@ import {
 } from "../types";
 import { TransactionCategoryForm } from "./TransactionCategoryForm";
 import { TransactionCategoryList } from "./TransactionCategoryList";
+import { useConfirmStore } from "@/stores/useConfirmStore";
 
 interface TransactionCategoriesSectionProps {
   categories: TransactionCategory[];
@@ -32,6 +33,7 @@ export const TransactionCategoriesSection: React.FC<
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [editingCategory, setEditingCategory] =
     useState<TransactionCategory | null>(null);
+  const confirm = useConfirmStore((state) => state.confirm);
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
 
   const expenseCategories = categories.filter(
@@ -77,7 +79,13 @@ export const TransactionCategoriesSection: React.FC<
   };
 
   const handleDeleteCategory = async (id: number) => {
-    if (!window.confirm("Yakin ingin menghapus kategori ini?")) return;
+    const isConfirmed = await confirm({
+      title: "Hapus Kategori",
+      message: "Yakin ingin menghapus kategori ini?",
+      confirmText: "Hapus",
+      type: "danger",
+    });
+    if (!isConfirmed) return;
     await deleteCategory(id);
   };
 

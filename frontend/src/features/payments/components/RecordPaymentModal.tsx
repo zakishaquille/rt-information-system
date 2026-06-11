@@ -3,6 +3,7 @@ import { recordAnnualPayment, recordPayment, deletePayment } from "../api";
 import type { PaymentDetail } from "../types";
 import { toast } from "@/stores/useToastStore";
 import { handleApiError } from "@/utils/apiErrorHelper";
+import { useConfirmStore } from "@/stores/useConfirmStore";
 
 interface Props {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export function RecordPaymentModal({
   details,
 }: Props) {
   const [isSubmitting, setIsSubmitting] = useState<number | "all" | null>(null);
+  const confirm = useConfirmStore((state) => state.confirm);
 
   if (!isOpen) return null;
 
@@ -85,11 +87,14 @@ export function RecordPaymentModal({
   const handleRevert = async (paymentId: number | null) => {
     if (!paymentId) return;
 
-    if (
-      !window.confirm(
-        "Apakah Anda yakin ingin membatalkan pembayaran ini? Data iuran akan kembali menjadi belum dibayar.",
-      )
-    ) {
+    const isConfirmed = await confirm({
+      title: "Batalkan Pembayaran",
+      message: "Apakah Anda yakin ingin membatalkan pembayaran ini? Data iuran akan kembali menjadi belum dibayar.",
+      confirmText: "Batalkan",
+      type: "warning",
+    });
+
+    if (!isConfirmed) {
       return;
     }
 
@@ -106,11 +111,14 @@ export function RecordPaymentModal({
   };
 
   const handlePayAnnual = async (rateId: number) => {
-    if (
-      !window.confirm(
-        "Bayar 1 Tahun penuh untuk iuran ini? Transaksi ini akan mencatat pembayaran untuk bulan 1-12 tahun ini.",
-      )
-    ) {
+    const isConfirmed = await confirm({
+      title: "Bayar 1 Tahun",
+      message: "Bayar 1 Tahun penuh untuk iuran ini? Transaksi ini akan mencatat pembayaran untuk bulan 1-12 tahun ini.",
+      confirmText: "Bayar 1 Tahun",
+      type: "info",
+    });
+
+    if (!isConfirmed) {
       return;
     }
 

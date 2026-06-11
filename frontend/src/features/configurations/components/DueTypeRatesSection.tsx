@@ -9,6 +9,7 @@ import {
 import { DueTypeRateForm } from "./DueTypeRateForm";
 import { DueTypeRateHistory } from "./DueTypeRateHistory";
 import { formatRp } from "@/utils/formatRp";
+import { useConfirmStore } from "@/stores/useConfirmStore";
 
 const today = () => new Date().toISOString().split("T")[0];
 
@@ -26,6 +27,7 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
   deleteRate,
 }) => {
   const [showRateForm, setShowRateForm] = useState(false);
+  const confirm = useConfirmStore((state) => state.confirm);
   const todayStr = today();
 
   const getRateStatus = (r: {
@@ -74,7 +76,13 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
   };
 
   const handleDeleteRate = async (id: number) => {
-    if (!window.confirm("Yakin ingin menghapus tarif ini?")) return;
+    const isConfirmed = await confirm({
+      title: "Hapus Tarif",
+      message: "Yakin ingin menghapus tarif ini?",
+      confirmText: "Hapus",
+      type: "danger",
+    });
+    if (!isConfirmed) return;
     await deleteRate(id);
   };
 

@@ -7,6 +7,7 @@ import {
   type ResidentFormData,
 } from "@/features/residents/types";
 import { ResidentForm } from "@/features/residents/components/ResidentForm";
+import { useConfirmStore } from "@/stores/useConfirmStore";
 
 export function ResidentsPage() {
   const {
@@ -19,6 +20,7 @@ export function ResidentsPage() {
   } = useResidents();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingResident, setEditingResident] = useState<Resident | null>(null);
+  const confirm = useConfirmStore((state) => state.confirm);
 
   // Form states
   const [formData, setFormData] = useState<ResidentFormData>({
@@ -88,7 +90,14 @@ export function ResidentsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this resident?")) {
+    const isConfirmed = await confirm({
+      title: "Hapus Data Warga",
+      message: "Are you sure you want to delete this resident?",
+      confirmText: "Hapus",
+      type: "danger",
+    });
+    
+    if (isConfirmed) {
       try {
         await deleteResident(id);
       } catch (err) {

@@ -3,6 +3,7 @@ import type { House, HouseResident } from "../types";
 import { useResidents } from "@/features/residents";
 import { useHouses } from "@/features/houses";
 import { formatRp } from "@/utils/formatRp";
+import { useConfirmStore } from "@/stores/useConfirmStore";
 
 interface HouseDetailModalProps {
   houseId: number;
@@ -38,6 +39,7 @@ export const HouseDetailModal: React.FC<HouseDetailModalProps> = ({
 
   const [selectedResidentId, setSelectedResidentId] = useState<number | "">("");
   const [isPic, setIsPic] = useState(false);
+  const confirm = useConfirmStore((state) => state.confirm);
 
   const loadDetails = async () => {
     setLoading(true);
@@ -72,11 +74,14 @@ export const HouseDetailModal: React.FC<HouseDetailModalProps> = ({
   };
 
   const handleUnassign = async (resident: HouseResident) => {
-    if (
-      window.confirm(
-        `Are you sure you want to remove ${resident.full_name} from this house?`,
-      )
-    ) {
+    const isConfirmed = await confirm({
+      title: "Hapus Penghuni",
+      message: `Are you sure you want to remove ${resident.full_name} from this house?`,
+      confirmText: "Hapus",
+      type: "danger",
+    });
+    
+    if (isConfirmed) {
       try {
         await onUnassign(houseId, resident.id);
         await loadDetails(); // refresh details

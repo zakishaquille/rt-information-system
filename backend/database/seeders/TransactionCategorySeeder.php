@@ -19,6 +19,7 @@ class TransactionCategorySeeder extends Seeder
         ];
 
         $incomeCategories = [
+            'Saldo Awal',
             'Sumbangan',
             'Pemda',
             'Denda',

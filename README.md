@@ -75,6 +75,16 @@ php artisan migrate:fresh --seed
 ```
 Perintah ini akan menghapus semua data yang ada dan mengisinya kembali dengan data dummy awal.
 
+
+#### 🔄 Alternatif Restore via MySQL:
+Jika tidak dapat menggunakan perintah `migrate` dari Laravel, bisa me-restore database langsung dari file backup di (`docs/assets/rtis_backup.sql`). File backup ini sudah memuat perintah untuk membuat database `rtis`, menyusun tabel, beserta seluruh data awalnya.
+
+Jalankan perintah berikut di terminal/command prompt (pastikan berada di *root folder* proyek ini):
+```bash
+mysql -u root -p < docs/assets/rtis_backup.sql
+```
+*(Catatan: Sesuaikan `root` dengan username MySQL Anda, dan masukkan password saat diminta. Jika MySQL Anda tidak memiliki password, gunakan `mysql -u root < docs/assets/rtis_backup.sql`).*
+
 ## 🗄 Database Schema (ERD)
 
 ```mermaid

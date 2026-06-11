@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { useResidents } from "../hooks/useResidents";
-import { ResidentStatus, type Resident, type ResidentFormData } from "../types";
-import { ResidentForm } from "./ResidentForm";
+import { useResidents } from "@/features/residents/hooks/useResidents";
+import { ResidentStatus, type Resident, type ResidentFormData } from "@/features/residents/types";
+import { ResidentForm } from "@/features/residents/components/ResidentForm";
 
-export function ResidentsList() {
+export function ResidentsPage() {
   const {
     residents,
     loading,

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useHouses } from "../hooks/useHouses";
-import { HouseStatus, type House, type HouseInput } from "../types";
-import { HouseForm } from "./HouseForm";
-import { HouseDetailModal } from "./HouseDetailModal";
+import { useHouses } from "@/features/houses/hooks/useHouses";
+import { HouseStatus, type House, type HouseInput } from "@/features/houses/types";
+import { HouseForm } from "@/features/houses/components/HouseForm";
+import { HouseDetailModal } from "@/features/houses/components/HouseDetailModal";
 
-export const HousesList: React.FC = () => {
+export const HousesPage: React.FC = () => {
   const {
     houses,
     loading,

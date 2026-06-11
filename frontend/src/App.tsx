@@ -13,13 +13,11 @@ import { Login } from "@/features/auth/Login";
 import { apiClient } from "@/api/client";
 import { ToastContainer } from "@/components/ui/ToastContainer";
 
-import {
-  HousesPage,
-  ResidentsPage,
-  ConfigurationsPage,
-  PaymentsPage,
-  TransactionsPage,
-} from "@/pages";
+import { HousesPage } from "@/features/houses";
+import { ResidentsPage } from "@/features/residents";
+import { ConfigurationsPage } from "@/features/configurations";
+import { PaymentsPage } from "@/features/payments";
+import { TransactionsPage } from "@/features/transactions";
 
 const Dashboard: React.FC = () => {
   const { user, setUser } = useAuthStore();
@@ -110,6 +108,18 @@ const Dashboard: React.FC = () => {
   );
 };
 
+const PageWrapper: React.FC<{ title: string; children: React.ReactNode }> = ({
+  title,
+  children,
+}) => {
+  return (
+    <>
+      <title>{title}</title>
+      {children}
+    </>
+  );
+};
+
 function App() {
   const { isAuthenticated, isInitialized, fetchUser } = useAuthStore();
 
@@ -132,18 +142,61 @@ function App() {
         <Routes>
           <Route
             path="/login"
-            element={isAuthenticated ? <Navigate to="/" /> : <Login />}
+            element={
+              isAuthenticated ? (
+                <Navigate to="/" />
+              ) : (
+                <PageWrapper title="Login - RTIS">
+                  <Login />
+                </PageWrapper>
+              )
+            }
           />
           <Route
             path="/"
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
           >
             <Route index element={<Navigate to="/houses" replace />} />
-            <Route path="houses" element={<HousesPage />} />
-            <Route path="residents" element={<ResidentsPage />} />
-            <Route path="payments" element={<PaymentsPage />} />
-            <Route path="transactions" element={<TransactionsPage />} />
-            <Route path="configurations" element={<ConfigurationsPage />} />
+            <Route
+              path="houses"
+              element={
+                <PageWrapper title="Daftar Rumah - RTIS">
+                  <HousesPage />
+                </PageWrapper>
+              }
+            />
+            <Route
+              path="residents"
+              element={
+                <PageWrapper title="Daftar Warga - RTIS">
+                  <ResidentsPage />
+                </PageWrapper>
+              }
+            />
+            <Route
+              path="payments"
+              element={
+                <PageWrapper title="Iuran - RTIS">
+                  <PaymentsPage />
+                </PageWrapper>
+              }
+            />
+            <Route
+              path="transactions"
+              element={
+                <PageWrapper title="Kas & Transaksi - RTIS">
+                  <TransactionsPage />
+                </PageWrapper>
+              }
+            />
+            <Route
+              path="configurations"
+              element={
+                <PageWrapper title="Pengaturan - RTIS">
+                  <ConfigurationsPage />
+                </PageWrapper>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>

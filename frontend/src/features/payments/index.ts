@@ -1,2 +1,2 @@
-export * from "./components/PaymentsList";
+export * from "./components/PaymentsPage";
 export type { Payment } from "./types";

@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { useConfigurations } from "../hooks/useConfigurations";
-import { DueTypeRatesSection } from "./DueTypeRatesSection";
-import { TransactionCategoriesSection } from "./TransactionCategoriesSection";
+import { useConfigurations } from "@/features/configurations/hooks/useConfigurations";
+import { DueTypeRatesSection } from "@/features/configurations/components/DueTypeRatesSection";
+import { TransactionCategoriesSection } from "@/features/configurations/components/TransactionCategoriesSection";
 
-export const ConfigurationsList: React.FC = () => {
+export const ConfigurationsPage: React.FC = () => {
   const {
     rates,
     categories,

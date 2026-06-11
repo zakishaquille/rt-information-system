@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { PaymentMatrixTable } from "./PaymentMatrixTable";
+import { useState, useEffect } from "react";
+import { PaymentMatrixTable } from "@/features/payments/components/PaymentMatrixTable";
 
-export function PaymentsList() {
+export function PaymentsPage() {
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState<number>(currentYear);
   const [searchQuery, setSearchQuery] = useState("");

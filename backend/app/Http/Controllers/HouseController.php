@@ -5,19 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreHouseRequest;
 use App\Http\Requests\UpdateHouseRequest;
 use App\Models\House;
+use App\Http\Resources\HouseResource;
 
 class HouseController extends Controller
 {
     public function index()
     {
         $houses = House::with('residents')->get();
-        return response()->json(['data' => $houses]);
+        return HouseResource::collection($houses);
     }
 
     public function store(StoreHouseRequest $request)
     {
         $house = House::create($request->validated());
-        return response()->json(['data' => $house], 201);
+        return new HouseResource($house);
     }
 
     public function show(House $house)
@@ -32,13 +33,13 @@ class HouseController extends Controller
             'payments.dueTypeRate',
             'payments.resident',
         ]);
-        return response()->json(['data' => $house]);
+        return new HouseResource($house);
     }
 
     public function update(UpdateHouseRequest $request, House $house)
     {
         $house->update($request->validated());
-        return response()->json(['data' => $house]);
+        return new HouseResource($house);
     }
 
     public function destroy(House $house)

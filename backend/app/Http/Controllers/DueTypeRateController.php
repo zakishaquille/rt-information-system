@@ -6,6 +6,7 @@ use App\Http\Requests\StoreDueTypeRateRequest;
 use App\Models\DueTypeRate;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\DueTypeRateResource;
 
 class DueTypeRateController extends Controller
 {
@@ -15,7 +16,7 @@ class DueTypeRateController extends Controller
     public function index()
     {
         $rates = DueTypeRate::orderByDesc('effective_from')->get();
-        return response()->json(['data' => $rates]);
+        return DueTypeRateResource::collection($rates);
     }
 
     /**
@@ -45,7 +46,7 @@ class DueTypeRateController extends Controller
             ]);
         });
 
-        return response()->json(['data' => $rate], 201);
+        return new DueTypeRateResource($rate);
     }
 
     /**

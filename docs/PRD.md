@@ -423,7 +423,6 @@ erDiagram
     transactions {
         int id PK
         int transaction_category_id FK
-        enum type "expense | income"
         date date
         decimal amount
         string name

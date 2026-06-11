@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Resident;
+use App\Http\Resources\ResidentResource;
 
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -12,7 +13,7 @@ class ResidentController extends Controller
 {
     public function index()
     {
-        return response()->json(['data' => Resident::all()]);
+        return ResidentResource::collection(Resident::all());
     }
 
     public function store(Request $request)
@@ -38,12 +39,12 @@ class ResidentController extends Controller
             'ktp_photo_path' => $path,
         ]);
 
-        return response()->json(['data' => $resident], 201);
+        return new ResidentResource($resident);
     }
 
     public function show(Resident $resident)
     {
-        return response()->json(['data' => $resident->load('houses')]);
+        return new ResidentResource($resident->load('houses'));
     }
 
     public function update(Request $request, Resident $resident)
@@ -65,7 +66,7 @@ class ResidentController extends Controller
 
         $resident->update($request->except('ktp_photo'));
 
-        return response()->json(['data' => $resident]);
+        return new ResidentResource($resident);
     }
 
     public function destroy(Resident $resident)

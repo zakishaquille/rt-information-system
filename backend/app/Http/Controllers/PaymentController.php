@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\PaymentResource;
 
 class PaymentController extends Controller
 {
@@ -46,7 +47,7 @@ class PaymentController extends Controller
             );
         });
 
-        return response()->json(['data' => $payment], 201);
+        return new PaymentResource($payment);
     }
 
     public function storeAnnual(Request $request)

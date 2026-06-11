@@ -102,13 +102,13 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Dependencies:** Task 2.1
   - **Estimated scope:** Medium
 
-- [ ] **Task 2.3: Other Transactions (Story 6)**
-  - **Description:** Allow recording non-due expenses/incomes. Includes transaction dummy seeders.
+- [x] **Task 2.3: Other Transactions (Story 6)**
+  - **Description:** Backend: `create_transactions_table`, `TransactionController` (index, store, update, destroy). Include basic dummy transactions seeding. Frontend: `TransactionsList` component + modal for Create/Edit Transaction. Allow recording non-due expenses/incomes.
   - **Acceptance criteria:**
-    - [ ] RT can record operational expenses (e.g., satpam salary) and view the transaction list.
-    - [ ] DB seeded with dummy expense/income transactions.
+    - [x] RT can record operational expenses (e.g., satpam salary) and view the transaction list.
+    - [x] DB seeded with dummy expense/income transactions.
   - **Verification:** 
-    - [ ] Manual check: Record an expense and income, and verify they appear on the transaction list.
+    - [x] Manual check: Record an expense and income, and verify they appear on the transaction list.
   - **Dependencies:** Task 2.1
   - **Estimated scope:** Medium
 

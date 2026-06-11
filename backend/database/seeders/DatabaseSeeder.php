@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             DueTypeRateSeeder::class,
             TransactionCategorySeeder::class,
             PaymentSeeder::class,
+            TransactionSeeder::class,
         ]);
     }
 }

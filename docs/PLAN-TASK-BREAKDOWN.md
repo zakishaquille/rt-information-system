@@ -113,8 +113,8 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Estimated scope:** Medium
 
 ### Checkpoint: Core Financials
-- [ ] All financial operations (Payments, Expenses) work correctly and data seeds perfectly.
-- [ ] Balances calculate properly based on seeded data.
+- [x] All financial operations (Payments, Expenses) work correctly and data seeds perfectly.
+- [x] Balances calculate properly based on seeded data.
 
 ---
 

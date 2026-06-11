@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  useToastStore,
-  type Toast as ToastType,
-} from "../../stores/useToastStore";
+import { useToastStore, type Toast as ToastType } from "@/stores/useToastStore";
 
 const Toast: React.FC<{ toast: ToastType; onRemove: (id: string) => void }> = ({
   toast,

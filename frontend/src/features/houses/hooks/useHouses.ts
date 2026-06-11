@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { HTTPError } from "ky";
 import type { House, HouseInput } from "../types";
 import { houseApi } from "../api";
 import { toast } from "@/stores/useToastStore";
@@ -39,7 +40,9 @@ export const useHouses = () => {
       toast.success("House created successfully");
       await fetchHouses();
     } catch (err) {
-      toast.error(await handleApiError(err, "Failed to create house"));
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, "Failed to create house"));
+      }
       throw err;
     } finally {
       setLoading(false);
@@ -53,7 +56,9 @@ export const useHouses = () => {
       toast.success("House updated successfully");
       await fetchHouses();
     } catch (err) {
-      toast.error(await handleApiError(err, "Failed to update house"));
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, "Failed to update house"));
+      }
       throw err;
     } finally {
       setLoading(false);
@@ -67,7 +72,9 @@ export const useHouses = () => {
       toast.success("House deleted successfully");
       await fetchHouses();
     } catch (err) {
-      toast.error(await handleApiError(err, "Failed to delete house"));
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, "Failed to delete house"));
+      }
       throw err;
     } finally {
       setLoading(false);

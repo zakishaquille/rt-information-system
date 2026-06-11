@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
+import { HTTPError } from "ky";
 import { useResidents } from "@/features/residents/hooks/useResidents";
-import { ResidentStatus, type Resident, type ResidentFormData } from "@/features/residents/types";
+import {
+  ResidentStatus,
+  type Resident,
+  type ResidentFormData,
+} from "@/features/residents/types";
 import { ResidentForm } from "@/features/residents/components/ResidentForm";
 
 export function ResidentsPage() {
@@ -29,6 +34,7 @@ export function ResidentsPage() {
   }, []);
 
   const handleOpenForm = (resident?: Resident) => {
+    setFormErrors({});
     if (resident) {
       setEditingResident(resident);
       setFormData({
@@ -52,10 +58,14 @@ export function ResidentsPage() {
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setEditingResident(null);
+    setFormErrors({});
   };
+
+  const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormErrors({});
     try {
       if (editingResident) {
         await updateResident(editingResident.id, formData);
@@ -64,7 +74,16 @@ export function ResidentsPage() {
       }
       handleCloseForm();
     } catch (err) {
-      console.error("Error submitting resident:", err);
+      if (err instanceof HTTPError && err.response.status === 422) {
+        try {
+          const errorData = await err.response.json();
+          setFormErrors(errorData.errors || {});
+        } catch (parseErr) {
+          console.error("Failed to parse 422 error", parseErr);
+        }
+      } else {
+        console.error("Error submitting resident:", err);
+      }
     }
   };
 
@@ -90,15 +109,12 @@ export function ResidentsPage() {
         <h1 className="text-2xl font-bold text-gray-900">
           Resident Management
         </h1>
-        <button
-          onClick={() => handleOpenForm()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
+        <button onClick={() => handleOpenForm()} className="rtis-btn">
           Add New Resident
         </button>
       </div>
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+      <div className="bg-white shadow overflow-x-auto sm:rounded-[10px]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -176,6 +192,7 @@ export function ResidentsPage() {
         <ResidentForm
           editingResident={editingResident}
           formData={formData}
+          errors={formErrors}
           onFormDataChange={setFormData}
           onSubmit={handleSubmit}
           onClose={handleCloseForm}

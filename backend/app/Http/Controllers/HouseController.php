@@ -11,7 +11,7 @@ class HouseController extends Controller
 {
     public function index()
     {
-        $houses = House::with('residents')->get();
+        $houses = House::with('residents')->latest()->get();
         return HouseResource::collection($houses);
     }
 

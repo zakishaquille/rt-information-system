@@ -74,7 +74,7 @@ export const PublicReportPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="mx-auto max-w-4xl space-y-6">
-        <div className="rounded-lg bg-white p-6 pb-12 shadow-sm border">
+        <div className="rounded-lg bg-white p-6 pb-12 shadow-sm">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Laporan Keuangan RT
           </h1>
@@ -96,7 +96,7 @@ export const PublicReportPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow-sm border">
+        <div className="rounded-lg bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6 border-b pb-4">
             <h2 className="text-xl font-bold text-gray-900">Rincian Bulanan</h2>
             <input

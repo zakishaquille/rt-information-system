@@ -26,7 +26,7 @@ export const TransactionsList: React.FC<Props> = ({
 
   if (transactions.length === 0) {
     return (
-      <div className="rounded-lg border bg-white p-8 text-center text-gray-500">
+      <div className="rounded-[10px] bg-white p-8 text-center shadow text-gray-500">
         Belum ada data transaksi.
       </div>
     );
@@ -35,7 +35,7 @@ export const TransactionsList: React.FC<Props> = ({
 
 
   return (
-    <div className="overflow-x-auto rounded-lg border bg-white shadow">
+    <div className="overflow-x-auto rounded-[10px] bg-white shadow">
       <table className="min-w-full divide-y divide-gray-200 text-sm">
         <thead className="bg-gray-50">
           <tr>

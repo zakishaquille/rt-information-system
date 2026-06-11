@@ -256,7 +256,7 @@ export const HouseDetailModal: React.FC<HouseDetailModalProps> = ({
                       Resident History
                     </h3>
                     {historyResidents.length > 0 ? (
-                      <div className="border rounded-md overflow-hidden">
+                      <div className="border rounded-md overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200 text-sm">
                           <thead className="bg-gray-50">
                             <tr>
@@ -323,7 +323,7 @@ export const HouseDetailModal: React.FC<HouseDetailModalProps> = ({
                 <div>
                   <h3 className="text-lg font-medium mb-3">Payment History</h3>
                   {house?.payments && house.payments.length > 0 ? (
-                    <div className="border rounded-md overflow-hidden">
+                    <div className="border rounded-md overflow-x-auto">
                       <table className="min-w-full divide-y divide-gray-200 text-sm">
                         <thead className="bg-gray-50">
                           <tr>

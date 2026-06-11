@@ -19,7 +19,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   trend,
 }) => {
   return (
-    <div className="rounded-lg border bg-white p-6 shadow-sm">
+    <div className="rtis-card p-6">
       <div className="flex items-center justify-between">
         <h3 className="text-sm text-left font-medium text-gray-500">{title}</h3>
         <div className="text-gray-400">{icon}</div>

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { HTTPError } from 'ky';
 import type { Resident, ResidentFormData } from '../types';
 import { residentApi } from '../api';
 import { toast } from '@/stores/useToastStore';
@@ -26,8 +27,10 @@ export function useResidents() {
       toast.success('Resident created successfully');
       await fetchResidents();
       return response.data;
-    } catch (err: unknown) {
-      toast.error(await handleApiError(err, 'Failed to create resident'));
+    } catch (err) {
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, 'Failed to create resident'));
+      }
       throw err;
     }
   };
@@ -38,8 +41,10 @@ export function useResidents() {
       toast.success('Resident updated successfully');
       await fetchResidents();
       return response.data;
-    } catch (err: unknown) {
-      toast.error(await handleApiError(err, 'Failed to update resident'));
+    } catch (err) {
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, 'Failed to update resident'));
+      }
       throw err;
     }
   };
@@ -49,8 +54,10 @@ export function useResidents() {
       await residentApi.deleteResident(id);
       toast.success('Resident deleted successfully');
       await fetchResidents();
-    } catch (err: unknown) {
-      toast.error(await handleApiError(err, 'Failed to delete resident'));
+    } catch (err) {
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, 'Failed to delete resident'));
+      }
       throw err;
     }
   };

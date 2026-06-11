@@ -13,7 +13,7 @@ class ResidentController extends Controller
 {
     public function index()
     {
-        return ResidentResource::collection(Resident::all());
+        return ResidentResource::collection(Resident::latest()->get());
     }
 
     public function store(Request $request)

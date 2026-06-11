@@ -99,7 +99,7 @@ export const DashboardPage: React.FC = () => {
         />
       </div>
 
-      <div className="rounded-lg border bg-white p-8 shadow-sm">
+      <div className="rtis-card p-6 pb-14">
         <div className="mb-4">
           <h3 className="text-lg font-medium text-gray-900">
             Arus Kas 12 Bulan Terakhir

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { HTTPError } from 'ky';
 import type {
   DueTypeRate,
   DueTypeRateInput,
@@ -38,7 +39,9 @@ export const useConfigurations = () => {
       toast.success('Rate created successfully');
       await fetchAll();
     } catch (err) {
-      toast.error(await handleApiError(err, 'Failed to create rate'));
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, 'Failed to create rate'));
+      }
       throw err;
     } finally {
       setLoading(false);
@@ -52,7 +55,9 @@ export const useConfigurations = () => {
       toast.success('Rate deleted successfully');
       await fetchAll();
     } catch (err) {
-      toast.error(await handleApiError(err, 'Failed to delete rate'));
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, 'Failed to delete rate'));
+      }
       throw err;
     } finally {
       setLoading(false);
@@ -66,7 +71,9 @@ export const useConfigurations = () => {
       toast.success('Category created successfully');
       await fetchAll();
     } catch (err) {
-      toast.error(await handleApiError(err, 'Failed to create category'));
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, 'Failed to create category'));
+      }
       throw err;
     } finally {
       setLoading(false);
@@ -80,7 +87,9 @@ export const useConfigurations = () => {
       toast.success('Category updated successfully');
       await fetchAll();
     } catch (err) {
-      toast.error(await handleApiError(err, 'Failed to update category'));
+      if (!(err instanceof HTTPError && err.response.status === 422)) {
+        toast.error(await handleApiError(err, 'Failed to update category'));
+      }
       throw err;
     } finally {
       setLoading(false);

@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { HTTPError } from "ky";
 import { useHouses } from "@/features/houses/hooks/useHouses";
-import { HouseStatus, type House, type HouseInput } from "@/features/houses/types";
+import {
+  HouseStatus,
+  type House,
+  type HouseInput,
+} from "@/features/houses/types";
 import { HouseForm } from "@/features/houses/components/HouseForm";
 import { HouseDetailModal } from "@/features/houses/components/HouseDetailModal";
 
@@ -36,8 +41,11 @@ export const HousesPage: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormErrors({});
     try {
       if (editingHouse) {
         await updateHouse(editingHouse.id, formData);
@@ -48,11 +56,21 @@ export const HousesPage: React.FC = () => {
       }
       setFormData({ code: "", address: "", status: HouseStatus.TIDAK_DIHUNI });
     } catch (err) {
-      console.error(err);
+      if (err instanceof HTTPError && err.response.status === 422) {
+        try {
+          const errorData = await err.response.json();
+          setFormErrors(errorData.errors || {});
+        } catch (parseErr) {
+          console.error("Failed to parse 422 error", parseErr);
+        }
+      } else {
+        console.error("Error submitting house:", err);
+      }
     }
   };
 
   const startEdit = (house: House) => {
+    setFormErrors({});
     setEditingHouse(house);
     setFormData({
       code: house.code,
@@ -65,6 +83,7 @@ export const HousesPage: React.FC = () => {
   const cancelEdit = () => {
     setEditingHouse(null);
     setIsAdding(false);
+    setFormErrors({});
     setFormData({ code: "", address: "", status: HouseStatus.TIDAK_DIHUNI });
   };
 
@@ -73,10 +92,7 @@ export const HousesPage: React.FC = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Daftar Rumah</h2>
         {!isAdding && !editingHouse && (
-          <button
-            onClick={() => setIsAdding(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
+          <button onClick={() => setIsAdding(true)} className="rtis-btn">
             Tambah Rumah
           </button>
         )}
@@ -84,7 +100,7 @@ export const HousesPage: React.FC = () => {
 
       {loading && !isAdding && !editingHouse && <p>Loading data...</p>}
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg border">
+      <div className="bg-white shadow overflow-x-auto sm:rounded-[10px]">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -163,19 +179,20 @@ export const HousesPage: React.FC = () => {
       </div>
 
       {(isAdding || editingHouse) && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 border shadow-sm rounded-md max-w-lg w-full relative">
+        <div className="fixed inset-0 bg-gray-600/50 overflow-y-auto h-full w-full flex items-center justify-center z-[100] p-4">
+          <div className="rtis-card p-8 max-w-lg w-full relative">
             <button
               onClick={cancelEdit}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl leading-none"
             >
               &times;
             </button>
-            <h3 className="text-lg font-medium mb-4">
+            <h3 className="text-xl font-bold mb-4 text-[#111827]">
               {editingHouse ? "Edit Rumah" : "Tambah Rumah"}
             </h3>
             <HouseForm
               formData={formData}
+              errors={formErrors}
               loading={loading}
               onInputChange={handleInputChange}
               onSubmit={handleSubmit}

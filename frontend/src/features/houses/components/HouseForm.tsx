@@ -3,6 +3,7 @@ import { HouseStatus, type HouseInput } from "../types";
 
 interface HouseFormProps {
   formData: HouseInput;
+  errors?: Record<string, string[]>;
   loading: boolean;
   onInputChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -13,6 +14,7 @@ interface HouseFormProps {
 
 export const HouseForm: React.FC<HouseFormProps> = ({
   formData,
+  errors,
   loading,
   onInputChange,
   onSubmit,
@@ -20,9 +22,9 @@ export const HouseForm: React.FC<HouseFormProps> = ({
 }) => {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Kode Rumah
           </label>
           <input
@@ -31,51 +33,56 @@ export const HouseForm: React.FC<HouseFormProps> = ({
             required
             value={formData.code}
             onChange={onInputChange}
-            className="mt-1 block w-full rounded border-gray-300 shadow-sm p-2 border"
+            className={`rtis-input w-full ${errors?.code ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
           />
+          {errors?.code && (
+            <p className="mt-1 text-sm text-red-500">{errors.code[0]}</p>
+          )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Alamat Lengkap
-          </label>
-          <input
-            type="text"
-            name="address"
-            required
-            value={formData.address}
-            onChange={onInputChange}
-            className="mt-1 block w-full rounded border-gray-300 shadow-sm p-2 border"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Status
           </label>
           <select
             name="status"
             value={formData.status}
             onChange={onInputChange}
-            className="mt-1 block w-full rounded border-gray-300 shadow-sm p-2 border"
+            className={`rtis-input w-full ${errors?.status ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
           >
             <option value={HouseStatus.DIHUNI}>Dihuni</option>
             <option value={HouseStatus.TIDAK_DIHUNI}>Tidak Dihuni</option>
           </select>
+          {errors?.status && (
+            <p className="mt-1 text-sm text-red-500">{errors.status[0]}</p>
+          )}
         </div>
       </div>
-      <div className="mt-4 flex space-x-3">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Alamat Lengkap
+        </label>
+        <input
+          type="text"
+          name="address"
+          required
+          value={formData.address}
+          onChange={onInputChange}
+          className={`rtis-input w-full ${errors?.address ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
+        />
+        {errors?.address && (
+          <p className="mt-1 text-sm text-red-500">{errors.address[0]}</p>
+        )}
+      </div>
+      <div className="mt-8 flex justify-end space-x-3">
+        <button type="button" onClick={onCancel} className="rtis-btn-outline">
+          Batal
+        </button>
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          className="rtis-btn disabled:opacity-50"
         >
           Simpan
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-        >
-          Batal
         </button>
       </div>
     </form>

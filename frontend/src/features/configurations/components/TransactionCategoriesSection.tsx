@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { HTTPError } from "ky";
 import {
   TransactionCategoryTypeEnum,
   type TransactionCategory,
@@ -31,6 +32,7 @@ export const TransactionCategoriesSection: React.FC<
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [editingCategory, setEditingCategory] =
     useState<TransactionCategory | null>(null);
+  const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
 
   const expenseCategories = categories.filter(
     (c) => c.type === TransactionCategoryTypeEnum.EXPENSE,
@@ -40,21 +42,37 @@ export const TransactionCategoriesSection: React.FC<
   );
 
   const handleCreateSubmit = async (data: TransactionCategoryInput) => {
+    setFormErrors({});
     try {
       await createCategory(data);
       setShowCategoryForm(false);
-    } catch {
-      // error is already set in hook
+    } catch (err) {
+      if (err instanceof HTTPError && err.response.status === 422) {
+        try {
+          const errorData = await err.response.json();
+          setFormErrors(errorData.errors || {});
+        } catch (parseErr) {
+          console.error("Failed to parse 422 error", parseErr);
+        }
+      }
     }
   };
 
   const handleUpdateSubmit = async (data: TransactionCategoryInput) => {
     if (!editingCategory) return;
+    setFormErrors({});
     try {
       await updateCategory(editingCategory.id, { name: data.name });
       setEditingCategory(null);
-    } catch {
-      // error is already set in hook
+    } catch (err) {
+      if (err instanceof HTTPError && err.response.status === 422) {
+        try {
+          const errorData = await err.response.json();
+          setFormErrors(errorData.errors || {});
+        } catch (parseErr) {
+          console.error("Failed to parse 422 error", parseErr);
+        }
+      }
     }
   };
 
@@ -66,6 +84,7 @@ export const TransactionCategoriesSection: React.FC<
   const handleCancelForm = () => {
     setShowCategoryForm(false);
     setEditingCategory(null);
+    setFormErrors({});
   };
 
   return (
@@ -82,8 +101,11 @@ export const TransactionCategoriesSection: React.FC<
         {!showCategoryForm && !editingCategory && (
           <button
             id="btn-add-category"
-            onClick={() => setShowCategoryForm(true)}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => {
+              setFormErrors({});
+              setShowCategoryForm(true);
+            }}
+            className="rtis-btn"
           >
             Tambah Kategori
           </button>
@@ -92,6 +114,7 @@ export const TransactionCategoriesSection: React.FC<
 
       {showCategoryForm && (
         <TransactionCategoryForm
+          errors={formErrors}
           loading={loading}
           onSubmit={handleCreateSubmit}
           onCancel={handleCancelForm}
@@ -102,6 +125,7 @@ export const TransactionCategoriesSection: React.FC<
         <TransactionCategoryForm
           key={editingCategory.id}
           initialData={editingCategory}
+          errors={formErrors}
           loading={loading}
           onSubmit={handleUpdateSubmit}
           onCancel={handleCancelForm}
@@ -117,14 +141,20 @@ export const TransactionCategoriesSection: React.FC<
           title="Pengeluaran"
           color="red"
           categories={expenseCategories}
-          onEdit={setEditingCategory}
+          onEdit={(cat) => {
+            setFormErrors({});
+            setEditingCategory(cat);
+          }}
           onDelete={handleDeleteCategory}
         />
         <TransactionCategoryList
           title="Pemasukan"
           color="green"
           categories={incomeCategories}
-          onEdit={setEditingCategory}
+          onEdit={(cat) => {
+            setFormErrors({});
+            setEditingCategory(cat);
+          }}
           onDelete={handleDeleteCategory}
         />
       </div>

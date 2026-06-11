@@ -24,7 +24,7 @@ export const DueTypeRateHistory: React.FC<DueTypeRateHistoryProps> = ({
       <summary className="cursor-pointer text-sm font-medium text-gray-500 hover:text-gray-700">
         Lihat histori tarif ({rates.length} record)
       </summary>
-      <div className="mt-2 overflow-hidden rounded-lg border border-gray-200">
+      <div className="mt-2 overflow-x-auto rounded-[10px] border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

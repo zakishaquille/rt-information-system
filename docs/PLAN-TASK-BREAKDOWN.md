@@ -206,15 +206,15 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
 
 ### Phase 4: Finalization & Polish
 
-- [ ] **Task 4.1: UI Polish, Loading States, & Error Handling**
+- [x] **Task 4.1: UI Polish, Loading States, & Error Handling**
   - **Description:** Systematically review all frontend pages to ensure loading states (skeletons/spinners) are present, errors are handled gracefully via toasts, and UI is responsive on mobile.
   - **Acceptance criteria:**
-    - [ ] All API requests have visible loading states.
-    - [ ] Global error interceptor displays user-friendly toast notifications for 4xx/5xx errors.
-    - [ ] Forms have proper client-side validation and display validation errors inline.
+    - [x] All API requests have visible loading states.
+    - [x] Global error interceptor displays user-friendly toast notifications for 4xx/5xx errors.
+    - [x] Forms have proper client-side validation and display validation errors inline.
   - **Verification:**
-    - [ ] Manual check: Throttle network in DevTools to verify loading states.
-    - [ ] Manual check: Trigger intentional errors (e.g., submit empty form) to verify toasts/inline errors.
+    - [x] Manual check: Throttle network in DevTools to verify loading states.
+    - [x] Manual check: Trigger intentional errors (e.g., submit empty form) to verify toasts/inline errors.
   - **Dependencies:** All previous tasks.
   - **Files likely touched:**
     - `frontend/src/api/client.ts`

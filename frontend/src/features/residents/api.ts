@@ -39,5 +39,5 @@ export const residentApi = {
   },
 
   deleteResident: (id: number) => 
-    apiClient.delete(`residents/${id}`).json(),
+    apiClient.delete(`residents/${id}`),
 };

@@ -31,7 +31,7 @@ export const TransactionCategoryList: React.FC<TransactionCategoryListProps> = (
           <li className="text-sm italic text-gray-400">Belum ada kategori</li>
         )}
         {categories.map((cat) => (
-          <li key={cat.id} className="flex items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2">
+          <li key={cat.id} className="flex items-center justify-between rounded-[10px] border border-gray-200 bg-white px-3 py-2">
             <span className="text-sm text-gray-800">{cat.name}</span>
             <div className="flex gap-2">
               <button

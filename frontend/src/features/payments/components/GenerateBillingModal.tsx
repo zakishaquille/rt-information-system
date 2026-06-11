@@ -13,6 +13,25 @@ interface GenerateBillingModalProps {
   year: number;
 }
 
+const months = Array.from({ length: 12 }, (_, i) =>
+  String(i + 1).padStart(2, "0"),
+);
+
+const monthNames = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
 export function GenerateBillingModal({
   isOpen,
   onClose,
@@ -23,24 +42,6 @@ export function GenerateBillingModal({
   const [selectedMonthStr, setSelectedMonthStr] = useState(currentMonthStr);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const months = Array.from({ length: 12 }, (_, i) =>
-    String(i + 1).padStart(2, "0"),
-  );
-
-  const monthNames = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
 
   const arrearsData = useMemo(() => {
     const results: {
@@ -108,7 +109,6 @@ export function GenerateBillingModal({
     }
 
     return text.trim();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arrearsData, selectedMonthStr, year]);
 
   const handleCopyText = async (text: string, id: string) => {

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { HTTPError } from "ky";
 import {
   RateStatus,
   type DueTypeRate,
@@ -53,12 +54,22 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
 
   const allDueTypeNames = Object.keys(activeRates);
 
+  const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
+
   const handleRateSubmit = async (data: DueTypeRateInput) => {
+    setFormErrors({});
     try {
       await createRate(data);
       setShowRateForm(false);
-    } catch {
-      // error is already set in hook
+    } catch (err) {
+      if (err instanceof HTTPError && err.response.status === 422) {
+        try {
+          const errorData = await err.response.json();
+          setFormErrors(errorData.errors || {});
+        } catch (parseErr) {
+          console.error("Failed to parse 422 error", parseErr);
+        }
+      }
     }
   };
 
@@ -80,8 +91,11 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
         {!showRateForm && (
           <button
             id="btn-set-rate"
-            onClick={() => setShowRateForm(true)}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => {
+              setFormErrors({});
+              setShowRateForm(true);
+            }}
+            className="rtis-btn"
           >
             Set Tarif Baru
           </button>
@@ -95,7 +109,7 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
           return (
             <div
               key={name}
-              className="flex-1 shrink-0 basis-[calc(25%-1rem)] min-w-50 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"
+              className="flex-1 shrink-0 basis-[calc(25%-1rem)] min-w-50 rounded-[10px] border border-gray-200 bg-gray-50 px-4 py-3"
             >
               <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                 Iuran {name}
@@ -130,9 +144,13 @@ export const DueTypeRatesSection: React.FC<DueTypeRatesSectionProps> = ({
       {showRateForm && (
         <DueTypeRateForm
           rates={rates}
+          errors={formErrors}
           loading={loading}
           onSubmit={handleRateSubmit}
-          onCancel={() => setShowRateForm(false)}
+          onCancel={() => {
+            setFormErrors({});
+            setShowRateForm(false);
+          }}
         />
       )}
 

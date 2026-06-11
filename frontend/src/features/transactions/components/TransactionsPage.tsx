@@ -101,7 +101,7 @@ export const TransactionsPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="rounded-lg border bg-white p-5 shadow-sm space-y-4">
+      <div className="rounded-lg bg-white p-5 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between border-b pb-4">
           <h3 className="font-semibold text-gray-700">Ringkasan Keuangan Total</h3>
           <div className="flex items-center gap-3">

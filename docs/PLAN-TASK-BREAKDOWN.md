@@ -169,14 +169,14 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
     - `frontend/src/features/public/*`
   - **Estimated scope:** Medium
 
-- [ ] **Task 3.4: Generate Billing URLs Tool (Story 8)**
+- [x] **Task 3.4: Generate Billing URLs Tool (Story 8)**
   - **Description:** Build a tool for the RT admin to generate a copy-paste ready list of billing URLs for all occupied houses, filtered by month.
   - **Acceptance criteria:**
-    - [ ] RT can view a list of all occupied houses with outstanding dues for a selected month.
-    - [ ] List includes house number, PIC name, arrears amount, and the unique public URL.
-    - [ ] A "Copy to Clipboard" button formats the list nicely for WhatsApp sharing.
+    - [x] RT can view a list of all occupied houses with outstanding dues for a selected month.
+    - [x] List includes house number, PIC name, arrears amount, and the unique public URL.
+    - [x] A "Copy to Clipboard" button formats the list nicely for WhatsApp sharing.
   - **Verification:**
-    - [ ] Manual check: Select a month, generate the list, click copy, and paste into a text editor to verify formatting.
+    - [x] Manual check: Select a month, generate the list, click copy, and paste into a text editor to verify formatting.
   - **Dependencies:** Task 3.3
   - **Files likely touched:**
     - `frontend/src/features/payments/components/GenerateBillingModal.tsx`

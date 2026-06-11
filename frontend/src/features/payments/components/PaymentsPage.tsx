@@ -1,10 +1,16 @@
 import { useState } from "react";
-import { PaymentMatrixTable } from "@/features/payments/components/PaymentMatrixTable";
+import { PaymentMatrixTable } from "./PaymentMatrixTable";
+import { GenerateBillingModal } from "./GenerateBillingModal";
+import { usePaymentMatrix } from "../hooks/usePayments";
 
 export function PaymentsPage() {
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState<number>(currentYear);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+
+  const { data, isLoading, refetch } = usePaymentMatrix(year);
+  const matrix = data?.data || [];
 
   return (
     <div className="space-y-6">
@@ -19,6 +25,26 @@ export function PaymentsPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-4">
+          <button
+            onClick={() => setIsGenerateModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 transition-colors"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+              />
+            </svg>
+            Generate Tagihan
+          </button>
+
           <div className="relative">
             <input
               type="search"
@@ -72,7 +98,20 @@ export function PaymentsPage() {
         </div>
       </div>
 
-      <PaymentMatrixTable year={year} searchQuery={searchQuery} />
+      <PaymentMatrixTable
+        year={year}
+        searchQuery={searchQuery}
+        matrix={matrix}
+        isLoading={isLoading}
+        refetch={refetch}
+      />
+
+      <GenerateBillingModal
+        isOpen={isGenerateModalOpen}
+        onClose={() => setIsGenerateModalOpen(false)}
+        matrix={matrix}
+        year={year}
+      />
     </div>
   );
 }

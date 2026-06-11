@@ -25,6 +25,7 @@ export interface PaymentMonth {
 
 export interface PaymentMatrixRow {
   house_id: number;
+  house_uuid: string;
   resident_id: number;
   house_code: string;
   resident_name: string;

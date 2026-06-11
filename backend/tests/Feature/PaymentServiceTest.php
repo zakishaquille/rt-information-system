@@ -86,6 +86,7 @@ class PaymentServiceTest extends TestCase
         $row = $matrix[0];
 
         $this->assertEquals($house->id, $row['house_id']);
+        $this->assertEquals($house->uuid, $row['house_uuid']);
         $this->assertEquals('A1', $row['house_code']);
         $this->assertEquals('Budi', $row['resident_name']);
 

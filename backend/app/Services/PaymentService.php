@@ -74,6 +74,7 @@ class PaymentService
 
         $row = [
             'house_id' => $house->id,
+            'house_uuid' => $house->uuid,
             'house_code' => $house->code,
             'resident_id' => $resident->id,
             'resident_name' => $resident->full_name,

@@ -1,17 +1,21 @@
 import { useState } from "react";
-import { usePaymentMatrix } from "../hooks/usePayments";
 import { RecordPaymentModal } from "./RecordPaymentModal";
-import { PaymentStatus, type PaymentDetail } from "../types";
+import { PaymentStatus, type PaymentDetail, type PaymentMatrixRow } from "../types";
 import { formatRp } from "@/utils/formatRp";
 
 export function PaymentMatrixTable({
   year,
   searchQuery = "",
+  matrix,
+  isLoading,
+  refetch,
 }: {
   year: number;
   searchQuery?: string;
+  matrix: PaymentMatrixRow[];
+  isLoading: boolean;
+  refetch: () => void;
 }) {
-  const { data, isLoading, refetch } = usePaymentMatrix(year);
   const [selectedCellId, setSelectedCellId] = useState<{
     houseId: number;
     monthStr: string;
@@ -23,7 +27,6 @@ export function PaymentMatrixTable({
     );
   }
 
-  const matrix = data?.data || [];
   const filteredMatrix = matrix.filter((row) => {
     const q = searchQuery.toLowerCase();
     return (

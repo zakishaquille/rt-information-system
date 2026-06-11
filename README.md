@@ -1,129 +1,246 @@
 # RTIS (Sistem Informasi Administrasi RT)
 
-RTIS adalah aplikasi terpusat untuk mengelola administrasi RT, termasuk data penghuni, rumah, iuran (satpam & kebersihan), pengeluaran, serta memungkinkan warga melihat status tagihan dan laporan keuangan secara transparan.
+RTIS (Sistem Informasi Administrasi RT) is a centralized web application designed to manage neighborhood (RT) administration efficiently. It allows RT administrators to manage resident data, houses, standard dues (security and cleaning), operational expenses, and payments. Additionally, it provides a transparent, read-only public portal where residents can check their billing status and view neighborhood financial reports without needing to log in.
 
-Proyek ini dibangun menggunakan arsitektur *decoupled* yang memisahkan direktori backend dan frontend:
-- **Backend:** Laravel (PHP, MySQL)
-- **Frontend:** React (Vite, TypeScript, Tailwind CSS v4, Zustand)
+## 🛠 Tech Stack
 
+- **Backend:** Laravel 13.x
+- **Frontend:** React 19.x with strict TypeScript, Zustand, Tailwind CSS 4.x (Vite)
+- **Database:** MySQL 8.x
+
+## 🗄 Database Schema (ERD)
+
+```mermaid
 ---
+title: RTIS ERD
+config:
+    layout: elk
+---
+erDiagram
+    residents {
+        int id PK
+        string full_name
+        string ktp_photo_path
+        enum status "tetap | kontrak"
+        string phone_number
+        boolean is_married
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at "soft delete"
+    }
 
-## Persyaratan Sistem (Prerequisites)
+    houses {
+        int id PK
+        uuid uuid UK "untuk public URL"
+        string code UK "nomor rumah"
+        string address
+        enum status "dihuni | tidak_dihuni"
+        timestamp created_at
+        timestamp updated_at
+    }
 
-Sebelum memulai instalasi, pastikan environment development Anda sudah terpasang:
-- **PHP** (v8.2+)
-- **Composer**
-- **Node.js** (v20+) & **npm**
-- **MySQL** Server
+    house_residents {
+        int id PK
+        int house_id FK
+        int resident_id FK
+        boolean is_pic "penanggung jawab"
+        date moved_in_at
+        date moved_out_at "nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
 
-### Instalasi Persyaratan di macOS (menggunakan Homebrew)
-Buka Terminal dan jalankan perintah berikut:
-```bash
-# Instal PHP dan Composer
-brew install php composer
+    due_type_rates {
+        int id PK
+        string name "nama jenis iuran bebas, cth: satpam, kebersihan, sampah"
+        decimal amount "tarif per bulan"
+        date effective_from "tanggal mulai berlaku; selalu diisi server dengan hari ini"
+        date effective_to "nullable — null = masih aktif"
+        timestamp created_at
+        timestamp updated_at
+    }
 
-# Instal Node.js
-brew install node
+    payments {
+        int id PK
+        int house_id FK
+        int resident_id FK
+        int due_type_rate_id FK "tarif saat bayar"
+        decimal amount "nominal dibayar"
+        string period_month "YYYY-MM, bulan yang dibayar"
+        date payment_date
+        text notes "nullable"
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at "soft delete"
+    }
 
-# Instal MySQL dan jalankan service-nya
-brew install mysql
-brew services start mysql
+    transaction_categories {
+        int id PK
+        enum type "expense | income"
+        string name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    transactions {
+        int id PK
+        int transaction_category_id FK
+        date date
+        decimal amount
+        string name
+        text note "nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    houses ||--o{ house_residents : "memiliki"
+    residents ||--o{ house_residents : "menghuni"
+    houses ||--o{ payments : "tagihan"
+    residents ||--o{ payments : "membayar"
+    due_type_rates ||--o{ payments : "tarif berlaku"
+    transaction_categories ||--o{ transactions : "kategori"
 ```
 
-### Instalasi Persyaratan di Windows
-Bagi pengguna Windows, Anda dapat menginstal satu per satu atau menggunakan tools terintegrasi:
-1. **PHP & MySQL:** Instal [XAMPP](https://www.apachefriends.org/download.html). Pastikan untuk menambahkan *path* PHP ke dalam *Environment Variables* Windows Anda.
-2. **Composer:** Unduh dan jalankan Windows Installer dari [getcomposer.org](https://getcomposer.org/download/).
-3. **Node.js:** Unduh dan instal Windows Installer (versi LTS) dari [nodejs.org](https://nodejs.org/).
+- `users`: Stores administrator authentication (RT admin).
+- `houses`: Stores house information (block, number, status) and uniquely generated UUID for public access.
+- `residents`: Stores resident details, including private KTP images.
+- `house_resident`: Pivot table tracking the assignment of residents to houses (many-to-many) with move-in/move-out history.
+- `due_type_rates`: Manages dynamically created due types and their active rates over time.
+- `transaction_categories`: Defines categories for operational income and expenses.
+- `payments`: Tracks monthly dues payments tied to a specific house and due type rate.
+- `transactions`: Records other operational income and expenses outside of standard dues.
 
----
+## ⚙️ Quick Start
 
-## Panduan Instalasi & Setup Environment (Developer Onboarding)
-
-Berikut adalah langkah-langkah untuk menjalankan project ini secara lokal di device Anda.
-
-### 1. Setup Backend (Laravel)
-Seluruh kode backend berada di dalam folder `backend/`.
-
-1. Masuk ke direktori backend:
+### macOS Setup
+1. **Clone the repository**
+2. **Setup Backend:**
    ```bash
    cd backend
-   ```
-2. Instal semua dependensi PHP via Composer:
-   ```bash
-   composer install
-   ```
-3. Salin file konfigurasi environment (jika belum ada):
-   ```bash
    cp .env.example .env
-   ```
-4. Generate *application key*:
-   ```bash
+   # Update DB_DATABASE, DB_USERNAME, DB_PASSWORD in .env
+   # Set ADMIN_PASSWORD for the dashboard login
+
+   composer install
    php artisan key:generate
-   ```
-5. Buka file `.env` di folder backend, kemudian pastikan konfigurasi berikut sesuai:
-   ```env
-   # Konfigurasi Database (Gunakan root dan sesuaikan password Anda)
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=rtis
-   DB_USERNAME=root
-   DB_PASSWORD=password_db_anda
-   
-   # Password statis yang akan digunakan untuk login Admin RT
-   ADMIN_PASSWORD=secret
-   
-   # Konfigurasi CORS & Sanctum SPA untuk Frontend
-   FRONTEND_URL=http://localhost:5173
-   SANCTUM_STATEFUL_DOMAINS=localhost:5173
-   ```
-6. Jalankan perintah migrasi. Karena database `rtis` belum ada, Laravel akan otomatis bertanya apakah Anda ingin membuatnya. Ketik `yes` dan tekan Enter:
-   ```bash
-   php artisan migrate
-   ```
-   *(Tambahkan opsi `--seed` jika seeder tersedia: `php artisan migrate --seed`)*
-7. Jalankan lokal server backend:
-   ```bash
+   php artisan storage:link
+   php artisan migrate:fresh --seed
    php artisan serve
    ```
-   *Backend API sekarang bisa diakses di `http://localhost:8000`.*
-
-### 3. Setup Frontend (React / Vite)
-Seluruh kode frontend berada di dalam folder `frontend/`. Buka tab terminal baru agar server backend tetap berjalan.
-
-1. Masuk ke direktori frontend:
+3. **Setup Frontend:**
    ```bash
    cd frontend
-   ```
-2. Salin file environment dan sesuaikan URL backend (opsional, jika berbeda):
-   ```bash
-   cp .env.example .env
-   ```
-   *Secara default `.env` berisi `BACKEND_URL=http://localhost:8000`.*
-3. Instal semua dependensi npm:
-   ```bash
    npm install
-   ```
-4. Jalankan server frontend:
-   ```bash
+   cp .env.example .env
+   # Set VITE_API_URL=http://localhost:8000
+
    npm run dev
    ```
-   *Frontend UI sekarang bisa diakses di `http://localhost:5173`.*
 
----
+### Windows Setup
+1. **Clone the repository**
+2. **Setup Backend:**
+   ```cmd
+   cd backend
+   copy .env.example .env
+   # Update DB configurations and ADMIN_PASSWORD in .env
 
-## Catatan Teknis (Yang Dilakukan Saat Scaffolding)
+   composer install
+   php artisan key:generate
+   php artisan storage:link
+   php artisan migrate:fresh --seed
+   php artisan serve
+   ```
+3. **Setup Frontend:**
+   ```cmd
+   cd frontend
+   npm install
+   copy .env.example .env
+   # Set VITE_API_URL=http://localhost:8000
 
-Bagi developer yang berkontribusi, berikut adalah rekap cara kerja scaffolding awal pada Task 1.1:
+   npm run dev
+   ```
 
-- **Directory Separation:** Sistem di-*scaffold* menggunakan `composer create-project laravel/laravel` dan `npm create vite@latest`, kemudian kode laravel dipisahkan secara murni ke folder `backend` agar tidak tercampur dengan ekosistem node (Vite).
-- **Sanctum SPA Authentication:**
-  - Login tidak memvalidasi akun User konvensional. Melainkan, ketika frontend hit ke `/login` mengirim password, backend hanya mencocokkan password tersebut dengan nilai `ADMIN_PASSWORD` di `.env`. 
-  - Jika cocok, sistem menggunakan fitur _First or Create_ untuk membuat akun `Admin RT` bayangan di database, lalu meregistrasi session-nya via `Auth::login($user)`.
-  - Frontend kemudian mendapatkan HTTP-Only Cookie untuk state session tanpa token ekspos (JWT).
-- **CORS & CSRF:**
-  - Laravel API diset menggunakan middleware `statefulApi` di `bootstrap/app.php`. 
-  - Host `localhost:5173` sudah terotorisasi via file `config/cors.php`.
-  - Proses API dari Frontend (*Fetch API wrapper* di `src/api/client.ts`) akan wajib memanggil _endpoint_ `GET /sanctum/csrf-cookie` setiap sebelum operasi _POST_/_PUT_/_DELETE_ ke server untuk mengambil Cookie CSRF. Fetch juga diatur dengan `credentials: 'include'`.
-- **Fetch Client (ky):** Seluruh integrasi API wajib menggunakan _HTTP client_ modern `ky` (yang membungkus native `fetch`). Kustomisasi diatur pada `src/api/client.ts` untuk menggunakan *hooks* `beforeRequest` yang membaca cookie dan mengirim header CSRF secara mandiri.
+## 🏗 Architecture
+
+RTIS is built with a decoupled architecture:
+- **Backend (Laravel):** Acts purely as an API server, utilizing Sanctum for SPA cookie-based authentication. Business logic is abstracted into Services, keeping Controllers thin. KTP images are stored in the private disk and served through protected API endpoints.
+- **Frontend (React):** A Single Page Application (SPA) utilizing Vite, fetching data from the backend via standard REST endpoints. State is managed with custom hooks and Zustand. It implements strict route guarding for the dashboard and allows public routing for reporting.
+
+## 🚀 Features & Application Demo
+
+Below is a detailed breakdown of all the features implemented in RTIS, accompanied by screenshots demonstrating the application's functionality.
+
+### 1. Authentication & Security
+The application features a secure admin panel protected by a cookie-based SPA authentication system (Laravel Sanctum). Only authorized neighborhood administrators can access the system.
+![Login](docs/screenshots/01-login.png)
+
+### 2. Dashboard & Financial Overview
+The Dashboard provides an immediate overview of the neighborhood's financial health, including:
+- Total Running Balance (Kas).
+- Income and Expenses for the current month.
+- House Occupancy metrics.
+- A 12-month historical bar chart comparing Income vs. Expenses.
+
+![Dashboard](docs/screenshots/02-dashboard.png)
+
+### 3. House Management
+Administrators can add, edit, and view all houses within the neighborhood, tracking whether they are occupied or empty.
+
+![Houses List](docs/screenshots/03-houses-list.png)
+
+**House Details & History:** Clicking on a house reveals its full payment history for the year and a log of past and present residents who have lived there.
+
+![House Detail](docs/screenshots/04-house-detail.png)
+![House History](docs/screenshots/16-house-history.png)
+
+### 4. Resident Management
+A comprehensive list of all registered residents. Administrators can securely upload KTP images (which are stored in private local disks to prevent public exposure).
+![Residents List](docs/screenshots/05-residents-list.png)
+
+**Resident Registration:** A clean modal form allows for quick data entry and house assignment. Residents can have their KTP photos securely uploaded and previewed within the system.
+
+![Resident Form](docs/screenshots/06-resident-form.png)
+
+### 5. App Configurations
+Dynamic management of default transaction categories and standard monthly dues (e.g., Satpam & Kebersihan). Administrators can set active rates, and the system automatically closes legacy rates to preserve historical payment integrity.
+![Configurations](docs/screenshots/07-configurations.png)
+
+### 6. Monthly Payments Matrix
+The core of the financial system. A powerful matrix table that tracks the payment status of every occupied house for every month of the year. It supports full payments, partial installments, and annual batch payments.
+![Payments Matrix](docs/screenshots/08-payments-matrix.png)
+
+**Recording Payments:** Clicking on a pending month cell opens a modal to easily record a payment for that house and period.
+
+![Payment Modal](docs/screenshots/14-payment-modal.png)
+
+**Billing URLs Generation Tool:** An efficient tool designed to generate a copy-paste ready list of public payment URLs for all residents with arrears in a specific month, optimized for sharing via WhatsApp.
+
+![Generate Billing](docs/screenshots/09-generate-billing.png)
+
+### 7. Operational Transactions
+Records for operational incomes and expenses outside of standard monthly dues. Includes categorization for clean financial reporting.
+
+![Transactions List](docs/screenshots/10-transactions-list.png)
+
+**Record Transaction:** Easy-to-use form to log cash inflows and outflows.
+
+![Transaction Form](docs/screenshots/11-transaction-form.png)
+
+### 8. Public Transparency Portal
+Residents have access to specific views without needing to log in, ensuring maximum transparency.
+
+**Public Billing Page:** A unique URL for each house allowing residents to view their exact payment history, dues breakdown, and any outstanding arrears.
+
+![Public Billing](docs/screenshots/12-public-billing.png)
+
+**Public Financial Report:** A high-level overview of the neighborhood's finances, providing charts and expense breakdowns to show residents exactly how RT funds are being utilized.
+
+![Public Report](docs/screenshots/13-public-report.png)
+
+### 9. Fully Responsive & Mobile-Friendly
+The entire web application from complex payment matrices to public portals is fully responsive, ensuring RT administrators and residents have a seamless experience on any device down to mobile view.
+
+<img src="docs/screenshots/14-mobile-view-1.png" alt="Mobile View 1" width="30%" height="auto">
+<img src="docs/screenshots/14-mobile-view-2.png" alt="Mobile View 2" width="30%" height="auto">
+<img src="docs/screenshots/14-mobile-view-3.png" alt="Mobile View 3" width="30%" height="auto">

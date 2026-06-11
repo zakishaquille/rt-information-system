@@ -354,6 +354,11 @@ src/
 #### ERD (Entity Relationship Diagram)
 
 ```mermaid
+---
+title: RTIS ERD
+config:
+    layout: elk
+---
 erDiagram
     residents {
         int id PK

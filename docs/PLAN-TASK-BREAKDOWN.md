@@ -250,14 +250,14 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
     - Various bug fixes across backend and frontend.
   - **Estimated scope:** Medium
 
-- [ ] **Task 4.4: Documentation (README & Screenshots)**
+- [x] **Task 4.4: Documentation (README & Screenshots)**
   - **Description:** Write a comprehensive README with setup instructions and feature screenshots.
   - **Acceptance criteria:**
-    - [ ] `README.md` includes local setup instructions for both Laravel and React, both for Mac OS and Windows.
-    - [ ] `README.md` details the tech stack and database schema (ERD).
-    - [ ] `README.md` includes screenshots of all features from phase 1-3.
+    - [x] `README.md` includes local setup instructions for both Laravel and React, both for Mac OS and Windows.
+    - [x] `README.md` details the tech stack and database schema (ERD).
+    - [x] `README.md` includes screenshots of all features from phase 1-3.
   - **Verification:**
-    - [ ] Manual check: Verify markdown renders correctly and screenshots load.
+    - [x] Manual check: Verify markdown renders correctly and screenshots load.
   - **Dependencies:** Task 4.3
   - **Files likely touched:**
     - `README.md`
@@ -265,10 +265,10 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
   - **Estimated scope:** Small
 
 ### Checkpoint: Complete
-- [ ] Application is production-ready.
-- [ ] `php artisan migrate:fresh --seed` produces a fully working demo environment.
-- [ ] Documentation is complete.
-- [ ] Ready for final sign-off.
+- [x] Application is production-ready.
+- [x] `php artisan migrate:fresh --seed` produces a fully working demo environment.
+- [x] Documentation is complete.
+- [x] Ready for final sign-off.
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |

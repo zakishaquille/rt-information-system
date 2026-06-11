@@ -120,14 +120,14 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
 
 ### Phase 3: Reporting & Public Access
 
-- [ ] **Task 3.1: Dashboard Statistics & Chart API (Backend)**
+- [x] **Task 3.1: Dashboard Statistics & Chart API (Backend)**
   - **Description:** Implement backend endpoints to calculate and return dashboard statistics: current month's financial summary, house occupancy, total running balance, and 12-month income vs expenses chart data.
   - **Acceptance criteria:**
-    - [ ] `GET /api/dashboard/stats` returns accurate calculations for total balance (which can be negative).
-    - [ ] Endpoint returns an array of monthly data (income vs expenses) for the past 12 months.
+    - [x] `GET /api/dashboard/stats` returns accurate calculations for total balance (which can be negative).
+    - [x] Endpoint returns an array of monthly data (income vs expenses) for the past 12 months.
   - **Verification:**
-    - [ ] Tests pass: `php artisan test --filter DashboardTest`
-    - [ ] Manual check: Hit endpoint with Postman/Insomnia and verify calculations against DB.
+    - [x] Tests pass: `php artisan test --filter DashboardTest`
+    - [x] Manual check: Hit endpoint with Postman/Insomnia and verify calculations against DB.
   - **Dependencies:** Task 2.3
   - **Files likely touched:**
     - `backend/routes/api.php`

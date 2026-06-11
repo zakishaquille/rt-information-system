@@ -31,4 +31,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('transactions', \App\Http\Controllers\TransactionController::class);
 
     Route::apiResource('transaction-categories', \App\Http\Controllers\TransactionCategoryController::class);
+
+    Route::get('dashboard/stats', [\App\Http\Controllers\DashboardController::class, 'stats']);
 });

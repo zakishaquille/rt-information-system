@@ -25,15 +25,16 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
    ```bash
    cd backend
    cp .env.example .env
-   # Update DB_DATABASE, DB_USERNAME, DB_PASSWORD di dalam .env (jika berbeda dari example)
+   # Buka file .env dan sesuaikan DB_DATABASE, DB_USERNAME, DB_PASSWORD (jika berbeda dari example)
    # Atur ADMIN_PASSWORD untuk login ke dashboard admin (default: `secret`)
 
    composer install
    php artisan key:generate
    php artisan storage:link
-
-   # Database dan data demo dibuat
    php artisan migrate:fresh --seed
+   # Database dan data demo dibuat
+   # Jika database belum ada, Laravel akan bertanya "Would you like to create it?". Ketik: yes
+
    php artisan serve
    ```
 3. **Setup Frontend:**
@@ -52,15 +53,18 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
    ```cmd
    cd backend
    copy .env.example .env
-   # Update konfigurasi DB dan ADMIN_PASSWORD di dalam .env
+
+   # Buka file .env dan sesuaikan DB_DATABASE, DB_USERNAME, DB_PASSWORD
    # (Update hanya jika berbeda dari example. Default password: `secret`)
 
    composer install
    php artisan key:generate
    php artisan storage:link
-   
-   # Database dan data demo dibuat
    php artisan migrate:fresh --seed 
+
+   # Database dan data demo dibuat
+   # Jika database belum ada, Laravel akan bertanya "Would you like to create it?". Ketik: yes
+
    php artisan serve
    ```
 3. **Setup Frontend:**
@@ -68,6 +72,7 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
    cd frontend
    npm install
    copy .env.example .env
+
    # Atur BACKEND_URL (jika berbeda dari example)
 
    npm run dev

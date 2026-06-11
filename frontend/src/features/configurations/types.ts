@@ -5,12 +5,13 @@ export const RateStatus = {
 
 export type RateStatusType = (typeof RateStatus)[keyof typeof RateStatus];
 
-export const CategoryType = {
+export const TransactionCategoryTypeEnum = {
   EXPENSE: "expense",
   INCOME: "income",
 } as const;
 
-export type CategoryType = (typeof CategoryType)[keyof typeof CategoryType];
+export type TransactionCategoryType =
+  (typeof TransactionCategoryTypeEnum)[keyof typeof TransactionCategoryTypeEnum];
 
 export interface DueTypeRate {
   id: number;
@@ -29,14 +30,14 @@ export interface DueTypeRateInput {
 
 export interface TransactionCategory {
   id: number;
-  type: CategoryType;
+  type: TransactionCategoryType;
   name: string;
   created_at: string;
   updated_at: string;
 }
 
 export interface TransactionCategoryInput {
-  type: CategoryType;
+  type: TransactionCategoryType;
   name: string;
 }
 

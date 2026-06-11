@@ -1,11 +1,25 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate, Link, useLocation, Outlet } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Link,
+  useLocation,
+  Outlet,
+} from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { Login } from "@/features/auth/Login";
 import { apiClient } from "@/api/client";
 import { ToastContainer } from "@/components/ui/ToastContainer";
 
-import { HousesPage, ResidentsPage, ConfigurationsPage, PaymentsPage } from "@/pages";
+import {
+  HousesPage,
+  ResidentsPage,
+  ConfigurationsPage,
+  PaymentsPage,
+  TransactionsPage,
+} from "@/pages";
 
 const Dashboard: React.FC = () => {
   const { user, setUser } = useAuthStore();
@@ -41,7 +55,9 @@ const Dashboard: React.FC = () => {
           <Link
             to="/houses"
             className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-              location.pathname.startsWith('/houses') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              location.pathname.startsWith("/houses")
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             }`}
           >
             Houses
@@ -49,7 +65,9 @@ const Dashboard: React.FC = () => {
           <Link
             to="/residents"
             className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-              location.pathname.startsWith('/residents') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              location.pathname.startsWith("/residents")
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             }`}
           >
             Residents
@@ -57,15 +75,29 @@ const Dashboard: React.FC = () => {
           <Link
             to="/payments"
             className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-              location.pathname.startsWith('/payments') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              location.pathname.startsWith("/payments")
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             }`}
           >
             Iuran
           </Link>
           <Link
+            to="/transactions"
+            className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+              location.pathname.startsWith("/transactions")
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            Kas
+          </Link>
+          <Link
             to="/configurations"
             className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-              location.pathname.startsWith('/configurations') ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              location.pathname.startsWith("/configurations")
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             }`}
           >
             Pengaturan
@@ -110,6 +142,7 @@ function App() {
             <Route path="houses" element={<HousesPage />} />
             <Route path="residents" element={<ResidentsPage />} />
             <Route path="payments" element={<PaymentsPage />} />
+            <Route path="transactions" element={<TransactionsPage />} />
             <Route path="configurations" element={<ConfigurationsPage />} />
           </Route>
         </Routes>

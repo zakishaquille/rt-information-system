@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  CategoryType,
+  TransactionCategoryTypeEnum,
   type TransactionCategory,
   type TransactionCategoryInput,
   type UpdateTransactionCategoryInput,
@@ -33,10 +33,10 @@ export const TransactionCategoriesSection: React.FC<
     useState<TransactionCategory | null>(null);
 
   const expenseCategories = categories.filter(
-    (c) => c.type === CategoryType.EXPENSE,
+    (c) => c.type === TransactionCategoryTypeEnum.EXPENSE,
   );
   const incomeCategories = categories.filter(
-    (c) => c.type === CategoryType.INCOME,
+    (c) => c.type === TransactionCategoryTypeEnum.INCOME,
   );
 
   const handleCreateSubmit = async (data: TransactionCategoryInput) => {

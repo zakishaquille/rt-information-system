@@ -96,7 +96,7 @@ export const ResidentForm: React.FC<ResidentFormProps> = ({
               <span className="text-gray-400 font-normal">(Optional)</span>
             </label>
             {editingResident?.ktp_photo_url && (
-              <div className="mt-2 mb-2">
+              <div className="mt-2 mb-2 flex flex-col items-center">
                 <span className="block text-xs text-gray-500 mb-1">
                   Current Photo:
                 </span>
@@ -104,8 +104,17 @@ export const ResidentForm: React.FC<ResidentFormProps> = ({
                   src={editingResident.ktp_photo_url}
                   alt="Current KTP"
                   crossOrigin="use-credentials"
-                  className="h-24 w-auto object-cover rounded border border-gray-200"
+                  className="h-48 w-auto object-cover rounded border border-gray-200"
                 />
+                <button
+                  type="button"
+                  onClick={() =>
+                    window.open(editingResident.ktp_photo_url, "_blank")
+                  }
+                  className="mt-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700"
+                >
+                  Open Image
+                </button>
               </div>
             )}
             <input

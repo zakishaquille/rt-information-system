@@ -22,8 +22,20 @@ const handleBeforeRequest = ({ request }: { request: Request }) => {
   }
 };
 
-const handleAfterResponse = async ({ response }: { response: Response }) => {
+const handleAfterResponse = async ({
+  request,
+  response,
+}: {
+  request: Request;
+  response: Response;
+}) => {
   useLoadingStore.getState().finishRequest();
+  
+  // Do not show toast for 401 Unauthorized on /api/user endpoint
+  if (!response.ok && response.status === 401 && request.url.includes("/api/user")) {
+    return response;
+  }
+
   if (!response.ok) {
     if (response.status !== 422) {
       // Don't toast 422, let forms handle it

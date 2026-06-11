@@ -151,15 +151,15 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
     - `frontend/src/features/dashboard/api/*`
   - **Estimated scope:** Medium
 
-- [ ] **Task 3.3: Public Billing API & UI (Story 9)**
+- [x] **Task 3.3: Public Billing API & UI (Story 9)**
   - **Description:** Implement the read-only public billing page for residents. They can view their house's billing status via a unique URL without logging in.
   - **Acceptance criteria:**
-    - [ ] Backend `GET /api-public/houses/{uuid}` returns house and payment status without authentication.
-    - [ ] Frontend `/tagihan/{uuid}` displays payment history for the current year (dues breakdown, payment dates, payer, and lunas/belum/partial status).
-    - [ ] Personal data (like KTP) is strictly NOT exposed in the public API.
+    - [x] Backend `GET /api-public/houses/{uuid}` returns house and payment status without authentication.
+    - [x] Frontend `/tagihan/{uuid}` displays payment history for the current year (dues breakdown, payment dates, payer, and lunas/belum/partial status).
+    - [x] Personal data (like KTP) is strictly NOT exposed in the public API.
   - **Verification:**
-    - [ ] Tests pass: `php artisan test --filter PublicBillingTest`
-    - [ ] Manual check: Access public URL in an incognito window and verify the UI.
+    - [x] Tests pass: `php artisan test --filter PublicBillingTest`
+    - [x] Manual check: Access public URL in an incognito window and verify the UI.
   - **Dependencies:** Task 2.1
   - **Files likely touched:**
     - `backend/routes/api-public.php`

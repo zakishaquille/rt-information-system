@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PaymentMatrixTable } from "@/features/payments/components/PaymentMatrixTable";
 
 export function PaymentsPage() {

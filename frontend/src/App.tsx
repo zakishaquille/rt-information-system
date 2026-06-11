@@ -18,6 +18,7 @@ import { ResidentsPage } from "@/features/residents";
 import { ConfigurationsPage } from "@/features/configurations";
 import { PaymentsPage } from "@/features/payments";
 import { TransactionsPage } from "@/features/transactions";
+import { DashboardPage } from "@/features/dashboard";
 
 const Dashboard: React.FC = () => {
   const { user, setUser } = useAuthStore();
@@ -50,6 +51,16 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="mb-6 flex space-x-4 border-b">
+          <Link
+            to="/"
+            className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+              location.pathname === "/"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            Dashboard
+          </Link>
           <Link
             to="/houses"
             className={`pb-2 px-1 border-b-2 font-medium text-sm ${
@@ -156,7 +167,14 @@ function App() {
             path="/"
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
           >
-            <Route index element={<Navigate to="/houses" replace />} />
+            <Route
+              index
+              element={
+                <PageWrapper title="Dashboard - RTIS">
+                  <DashboardPage />
+                </PageWrapper>
+              }
+            />
             <Route
               path="houses"
               element={

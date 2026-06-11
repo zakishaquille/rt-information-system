@@ -136,14 +136,14 @@ Breaking down the RTIS specification into vertically sliced, implementable tasks
     - `backend/tests/Feature/DashboardTest.php`
   - **Estimated scope:** Medium
 
-- [ ] **Task 3.2: Dashboard UI Components & Integration (Frontend)**
+- [x] **Task 3.2: Dashboard UI Components & Integration (Frontend)**
   - **Description:** Build the frontend React Dashboard page to display statistics cards and financial charts using the data from the new API.
   - **Acceptance criteria:**
-    - [ ] Dashboard displays Total Balance, Income this month, and Expense this month in clear stat cards.
-    - [ ] 12-month bar/line chart accurately renders the income vs. expense data.
+    - [x] Dashboard displays Total Balance, Income this month, and Expense this month in clear stat cards.
+    - [x] 12-month bar/line chart accurately renders the income vs. expense data.
   - **Verification:**
-    - [ ] Build succeeds: `npm run build`
-    - [ ] Manual check: Load the dashboard and visually validate charts against seeded dummy data.
+    - [x] Build succeeds: `npm run build`
+    - [x] Manual check: Load the dashboard and visually validate charts against seeded dummy data.
   - **Dependencies:** Task 3.1
   - **Files likely touched:**
     - `frontend/src/pages/DashboardPage.tsx`

@@ -109,7 +109,7 @@ export const ResidentForm: React.FC<ResidentFormProps> = ({
                 <button
                   type="button"
                   onClick={() =>
-                    window.open(editingResident.ktp_photo_url, "_blank")
+                    editingResident.ktp_photo_url && window.open(editingResident.ktp_photo_url, "_blank")
                   }
                   className="mt-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700"
                 >

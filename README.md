@@ -20,8 +20,17 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
 ## ⚙️ Quick Start
 
 ### Instalasi di macOS
-1. **Clone repository ini**
-2. **Setup Backend:**
+1. **Verifikasi Environment Requirements:** Pastikan dependensi sudah terinstall dan berjalan dengan menjalankan perintah berikut di terminal:
+   ```bash
+   php -v
+   composer -V
+   node -v
+   npm -v
+   mysql -V
+   ```
+   *(Pastikan tidak ada pesan *error* dan versi yang muncul memenuhi/mendekati persyaratan minimum).*
+2. **Clone repository ini**
+3. **Setup Backend:**
    ```bash
    cd backend
    cp .env.example .env
@@ -37,7 +46,7 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
 
    php artisan serve
    ```
-3. **Setup Frontend:**
+4. **Setup Frontend:**
    ```bash
    cd frontend
    npm install
@@ -48,8 +57,17 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
    ```
 
 ### Instalasi di Windows
-1. **Clone repository ini**
-2. **Setup Backend:**
+1. **Verifikasi Environment Requirements:** Pastikan dependensi sudah terinstall dan berjalan dengan menjalankan perintah berikut di Command Prompt / PowerShell:
+   ```cmd
+   php -v
+   composer -V
+   node -v
+   npm -v
+   mysql -V
+   ```
+   *(Pastikan tidak ada pesan *error* dan versi yang muncul memenuhi/mendekati persyaratan minimum).*
+2. **Clone repository ini**
+3. **Setup Backend:**
    ```cmd
    cd backend
    copy .env.example .env
@@ -67,7 +85,7 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
 
    php artisan serve
    ```
-3. **Setup Frontend:**
+4. **Setup Frontend:**
    ```cmd
    cd frontend
    npm install

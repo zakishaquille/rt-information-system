@@ -161,6 +161,13 @@ erDiagram
    npm run dev
    ```
 
+### 🔄 Reset Data / Demo Data
+If you want to reset the database state to its original clean condition (highly useful for demo purposes or re-testing), you simply need to run the following command inside the `backend` folder:
+```bash
+php artisan migrate:fresh --seed
+```
+This command will erase all existing data and re-populate it with the initial dummy data.
+
 ## 🏗 Architecture
 
 RTIS is built with a decoupled architecture:

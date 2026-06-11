@@ -31,6 +31,8 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
    composer install
    php artisan key:generate
    php artisan storage:link
+
+   # Database dan data demo dibuat
    php artisan migrate:fresh --seed
    php artisan serve
    ```
@@ -50,12 +52,15 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
    ```cmd
    cd backend
    copy .env.example .env
-   # Update konfigurasi DB dan ADMIN_PASSWORD di dalam .env (jika berbeda dari example, default password: `secret`)
+   # Update konfigurasi DB dan ADMIN_PASSWORD di dalam .env
+   # (Update hanya jika berbeda dari example. Default password: `secret`)
 
    composer install
    php artisan key:generate
    php artisan storage:link
-   php artisan migrate:fresh --seed
+   
+   # Database dan data demo dibuat
+   php artisan migrate:fresh --seed 
    php artisan serve
    ```
 3. **Setup Frontend:**
@@ -68,6 +73,8 @@ Sebelum menjalankan aplikasi, pastikan sistem Anda memenuhi persyaratan berikut:
    npm run dev
    ```
 
+---
+
 ### 🔄 Reset Data / Data Demo
 Jika Anda ingin me-reset keadaan database agar datanya kembali bersih dan rapi seperti sedia kala (sangat berguna untuk keperluan demo atau testing ulang), Anda cukup menjalankan perintah berikut di dalam folder `backend`:
 ```bash
@@ -75,15 +82,16 @@ php artisan migrate:fresh --seed
 ```
 Perintah ini akan menghapus semua data yang ada dan mengisinya kembali dengan data dummy awal.
 
-
 #### 🔄 Alternatif Restore via MySQL:
-Jika tidak dapat menggunakan perintah `migrate` dari Laravel, bisa me-restore database langsung dari file backup di (`docs/assets/rtis_backup.sql`). File backup ini sudah memuat perintah untuk membuat database `rtis`, menyusun tabel, beserta seluruh data awalnya.
+Jika tidak dapat menggunakan perintah `migrate` dari Laravel, bisa me-restore database langsung dari file backup di [docs/assets/rtis_backup.sql](docs/assets/rtis_backup.sql). File backup ini sudah memuat perintah untuk membuat database `rtis`, menyusun tabel, beserta seluruh data awalnya.
 
 Jalankan perintah berikut di terminal/command prompt (pastikan berada di *root folder* proyek ini):
 ```bash
 mysql -u root -p < docs/assets/rtis_backup.sql
 ```
 *(Catatan: Sesuaikan `root` dengan username MySQL Anda, dan masukkan password saat diminta. Jika MySQL Anda tidak memiliki password, gunakan `mysql -u root < docs/assets/rtis_backup.sql`).*
+
+---
 
 ## 🗄 Database Schema (ERD)
 

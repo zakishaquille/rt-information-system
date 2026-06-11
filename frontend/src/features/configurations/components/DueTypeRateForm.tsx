@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CurrencyInput } from '@/components/CurrencyInput';
 import type { DueTypeRate, DueTypeRateInput } from '../types';
 
 interface DueTypeRateFormProps {
@@ -14,14 +15,17 @@ export const DueTypeRateForm: React.FC<DueTypeRateFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
-  const [rateForm, setRateForm] = useState<DueTypeRateInput>({
+  const [rateForm, setRateForm] = useState<{name: string; amount: number | ''}>({
     name: '',
-    amount: 0,
+    amount: '',
   });
 
   const handleRateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(rateForm);
+    await onSubmit({
+      name: rateForm.name,
+      amount: Number(rateForm.amount),
+    });
   };
 
   return (
@@ -54,13 +58,11 @@ export const DueTypeRateForm: React.FC<DueTypeRateFormProps> = ({
         </div>
         <div>
           <label htmlFor="rate-amount" className="block text-xs font-medium text-gray-600">Nominal (Rp)</label>
-          <input
+          <CurrencyInput
             id="rate-amount"
-            type="number"
-            min={0}
             required
-            value={rateForm.amount || ''}
-            onChange={(e) => setRateForm({ ...rateForm, amount: Number(e.target.value) })}
+            value={rateForm.amount}
+            onChange={(val) => setRateForm({ ...rateForm, amount: val })}
             placeholder="100000"
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />

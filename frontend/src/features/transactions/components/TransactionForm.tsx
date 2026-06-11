@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { CurrencyInput } from "@/components/CurrencyInput";
 
 import type { Transaction, TransactionPayload } from "../types";
 import {
@@ -29,7 +30,7 @@ export const TransactionForm: React.FC<Props> = ({
   const [date, setDate] = useState<string>(
     new Date().toISOString().split("T")[0],
   );
-  const [amount, setAmount] = useState<string>("");
+  const [amount, setAmount] = useState<number | "">("");
   const [name, setName] = useState<string>("");
   const [note, setNote] = useState<string>("");
 
@@ -38,7 +39,7 @@ export const TransactionForm: React.FC<Props> = ({
     if (initialData) {
       setTransactionCategoryId(initialData.transaction_category_id);
       setDate(initialData.date);
-      setAmount(initialData.amount.toString());
+      setAmount(initialData.amount);
       setName(initialData.name);
       setNote(initialData.note || "");
     } else {
@@ -157,11 +158,9 @@ export const TransactionForm: React.FC<Props> = ({
               <label className="block text-sm font-medium text-gray-700">
                 Nominal (Rp)
               </label>
-              <input
-                type="number"
-                min="0"
+              <CurrencyInput
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(val) => setAmount(val)}
                 placeholder="0"
                 className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
                 required
